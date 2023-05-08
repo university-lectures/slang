@@ -4,8 +4,6 @@
 	<p align="center">Yet another compiler that disputes over words...</p>
 </p>
 
----
-
 This repository is part of a lecture series on compiler construction at the [Baden-Württemberg Cooperative State University Karlsruhe](https://www.karlsruhe.dhbw.de/en/general/about-dhbw-karlsruhe.html) in Germany. Special to this university are the career-integrated undergraduate study programs. In alternating three-month phases, students learn theory at the university and receive practical training from an enterprise. For a listing of lecture content, see section T3INF4211 in the [university's module handbook](https://www.dhbw.de/fileadmin/user/public/SP/KA/Informatik/Informatik.pdf).
 
 ## Contribute to this project
