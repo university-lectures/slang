@@ -136,9 +136,7 @@ class HandmadeParserEquationTest extends HandmadeParserUtils {
 
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void equalities_detectsSyntaxErrors(
-			String input,
-			@ConvertWith(CodeLocationConverter.class) CodeLocation location ){
+	void equalities_detectsSyntaxErrors( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		
@@ -151,9 +149,7 @@ class HandmadeParserEquationTest extends HandmadeParserUtils {
 	@ParameterizedTest( name = "mismatched input {0} at 0:0:0-{1}, expected ==" )
 	@MethodSource("delegation_errorDetection")
 	@CsvSource({ "!=,0:2:2" })
-	void equalities1_rejectsOtherThan_EQUAL(
-			String input,
-			@ConvertWith(CodeLocationConverter.class) CodeLocation location ){
+	void equalities1_rejectsOtherThan_EQUAL( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		
@@ -166,9 +162,7 @@ class HandmadeParserEquationTest extends HandmadeParserUtils {
 	@ParameterizedTest( name = "mismatched input {0} at 0:0:0-{1}, expected !=" )
 	@MethodSource("delegation_errorDetection")
 	@CsvSource({ "==,0:2:2" })
-	void equalities2_rejectsOtherThan_UNEQUAL(
-			String input,
-			@ConvertWith(CodeLocationConverter.class) CodeLocation location ){
+	void equalities2_rejectsOtherThan_UNEQUAL( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		
