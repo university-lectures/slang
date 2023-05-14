@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
@@ -118,6 +119,7 @@ class HandmadeParserLiteralTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "42,0:2:2" })
 	void literal1_rejectsOtherThan_BOOL( String input, @CodeLoc CodeLocation location ){
 		initializeParser( input );
 		
@@ -129,6 +131,7 @@ class HandmadeParserLiteralTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "true,0:4:4", "false,0:5:5" })
 	void literal2_rejectsOtherThan_NUMERIC_LITERAL( String input, @CodeLoc CodeLocation location ){
 		initializeParser( input );
 		

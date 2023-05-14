@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
@@ -179,6 +180,7 @@ class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "/,0:1:1", "%,0:1:1" })
 	void factor1_rejectsOtherThan_ASTERISK( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
@@ -191,6 +193,7 @@ class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "*,0:1:1", "%,0:1:1" })
 	void factor2_rejectsOtherThan_SLASH( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
@@ -203,6 +206,7 @@ class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "*,0:1:1", "/,0:1:1" })
 	void factor3_rejectsOtherThan_PERCENT( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );

@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
@@ -84,6 +85,7 @@ class HandmadeParserSignedTermTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "-,0:1:1" })
 	void signedTerm1_rejectsOtherThan_PLUS( String input, @CodeLoc CodeLocation location ){
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( returnDummyAst ).when( spy ).exponentiation( );
@@ -96,6 +98,7 @@ class HandmadeParserSignedTermTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "+,0:1:1" })
 	void signedTerm2_rejectsOtherThan_MINUS( String input, @CodeLoc CodeLocation location ){
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( returnDummyAst ).when( spy ).exponentiation( );

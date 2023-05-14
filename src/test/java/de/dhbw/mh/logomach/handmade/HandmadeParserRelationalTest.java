@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
@@ -201,6 +202,7 @@ class HandmadeParserRelationalTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ ">,0:1:1", "<=,0:2:2", ">=,0:2:2" })
 	void relations1_rejectsOtherThan_LESS( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
@@ -213,6 +215,7 @@ class HandmadeParserRelationalTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "<,0:1:1", "<=,0:2:2", ">=,0:2:2" })
 	void relations2_rejectsOtherThan_GREATER( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
@@ -225,6 +228,7 @@ class HandmadeParserRelationalTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "<,0:1:1", ">,0:1:1", ">=,0:2:2" })
 	void relations3_rejectsOtherThan_LESS_EQUAL( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
@@ -237,6 +241,7 @@ class HandmadeParserRelationalTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "<,0:1:1", ">,0:1:1", "<=,0:2:2" })
 	void relations4_rejectsOtherThan_GREATER_EQUAL( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
