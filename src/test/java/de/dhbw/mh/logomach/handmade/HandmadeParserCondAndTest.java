@@ -27,21 +27,21 @@ class HandmadeParserCondAndTest extends HandmadeParserUtils {
 	
 	private static Stream<Arguments> delegation_errorDetection() {
 		return Stream.of(
-				Arguments.of( "+",  new CodeLocation(0,1,1) ),
-				Arguments.of( "-",  new CodeLocation(0,1,1) ),
-				Arguments.of( "*",  new CodeLocation(0,1,1) ),
-				Arguments.of( "/",  new CodeLocation(0,1,1) ),
-				Arguments.of( "%",  new CodeLocation(0,1,1) ),
-				Arguments.of( "**", new CodeLocation(0,2,2) ),
-				Arguments.of( "==", new CodeLocation(0,2,2) ),
-				Arguments.of( "!=", new CodeLocation(0,2,2) ),
-				Arguments.of( "(",  new CodeLocation(0,1,1) ),
-				Arguments.of( "<",  new CodeLocation(0,1,1) ),
-				Arguments.of( ">",  new CodeLocation(0,1,1) ),
-				Arguments.of( "<=", new CodeLocation(0,2,2) ),
-				Arguments.of( ">=", new CodeLocation(0,2,2) ),
-				Arguments.of( "12", new CodeLocation(0,2,2) ),
-				Arguments.of( "xy", new CodeLocation(0,2,2) )
+				Arguments.of( "+",  "0:1:1" ),
+				Arguments.of( "-",  "0:1:1" ),
+				Arguments.of( "*",  "0:1:1" ),
+				Arguments.of( "/",  "0:1:1" ),
+				Arguments.of( "%",  "0:1:1" ),
+				Arguments.of( "**", "0:2:2" ),
+				Arguments.of( "==", "0:2:2" ),
+				Arguments.of( "!=", "0:2:2" ),
+				Arguments.of( "(",  "0:1:1" ),
+				Arguments.of( "<",  "0:1:1" ),
+				Arguments.of( ">",  "0:1:1" ),
+				Arguments.of( "<=", "0:2:2" ),
+				Arguments.of( ">=", "0:2:2" ),
+				Arguments.of( "12", "0:2:2" ),
+				Arguments.of( "xy", "0:2:2" )
 		);
 	}
 	
@@ -107,7 +107,7 @@ class HandmadeParserCondAndTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void conjunction_detectsSyntaxErrors( String input, CodeLocation location ){
+	void conjunction_detectsSyntaxErrors( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		
@@ -119,7 +119,7 @@ class HandmadeParserCondAndTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void conjunction1_rejectsOtherThan_LAND( String input, CodeLocation location ){
+	void conjunction1_rejectsOtherThan_LAND( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		

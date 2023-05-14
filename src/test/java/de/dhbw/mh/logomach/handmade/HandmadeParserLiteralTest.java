@@ -21,20 +21,20 @@ class HandmadeParserLiteralTest extends HandmadeParserUtils {
 	
 	private static Stream<Arguments> delegation_errorDetection() {
 		return Stream.of(
-				Arguments.of( "+",   new CodeLocation(0,1,1) ),
-				Arguments.of( "-",   new CodeLocation(0,1,1) ),
-				Arguments.of( "*",   new CodeLocation(0,1,1) ),
-				Arguments.of( "/",   new CodeLocation(0,1,1) ),
-				Arguments.of( "%",   new CodeLocation(0,1,1) ),
-				Arguments.of( "**",  new CodeLocation(0,2,2) ),
-				Arguments.of( "==",  new CodeLocation(0,2,2) ),
-				Arguments.of( "!=",  new CodeLocation(0,2,2) ),
-				Arguments.of( "(",   new CodeLocation(0,1,1) ),
-				Arguments.of( "<",   new CodeLocation(0,1,1) ),
-				Arguments.of( ">",   new CodeLocation(0,1,1) ),
-				Arguments.of( "<=",  new CodeLocation(0,2,2) ),
-				Arguments.of( ">=",  new CodeLocation(0,2,2) ),
-				Arguments.of( "nil", new CodeLocation(0,3,3) )
+				Arguments.of( "+",   "0:1:1" ),
+				Arguments.of( "-",   "0:1:1" ),
+				Arguments.of( "*",   "0:1:1" ),
+				Arguments.of( "/",   "0:1:1" ),
+				Arguments.of( "%",   "0:1:1" ),
+				Arguments.of( "**",  "0:2:2" ),
+				Arguments.of( "==",  "0:2:2" ),
+				Arguments.of( "!=",  "0:2:2" ),
+				Arguments.of( "(",   "0:1:1" ),
+				Arguments.of( "<",   "0:1:1" ),
+				Arguments.of( ">",   "0:1:1" ),
+				Arguments.of( "<=",  "0:2:2" ),
+				Arguments.of( ">=",  "0:2:2" ),
+				Arguments.of( "nil", "0:3:3" )
 		);
 	}
 	
@@ -87,7 +87,7 @@ class HandmadeParserLiteralTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void literal_detectsSyntaxErrors( String input, CodeLocation location ){
+	void literal_detectsSyntaxErrors( String input, @CodeLoc CodeLocation location ){
 		initializeParser( input );
 		
 		assertThatExceptionOfType( RuntimeException.class ).isThrownBy(()->{
@@ -118,7 +118,7 @@ class HandmadeParserLiteralTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void literal1_rejectsOtherThan_BOOL( String input, CodeLocation location ){
+	void literal1_rejectsOtherThan_BOOL( String input, @CodeLoc CodeLocation location ){
 		initializeParser( input );
 		
 		assertThatExceptionOfType( RuntimeException.class ).isThrownBy(()->{
@@ -129,7 +129,7 @@ class HandmadeParserLiteralTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void literal2_rejectsOtherThan_NUMERIC_LITERAL( String input, CodeLocation location ){
+	void literal2_rejectsOtherThan_NUMERIC_LITERAL( String input, @CodeLoc CodeLocation location ){
 		initializeParser( input );
 		
 		assertThatExceptionOfType( RuntimeException.class ).isThrownBy(()->{

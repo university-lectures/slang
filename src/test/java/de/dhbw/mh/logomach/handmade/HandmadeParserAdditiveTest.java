@@ -27,13 +27,13 @@ class HandmadeParserAdditiveTest extends HandmadeParserUtils {
 	
 	private static Stream<Arguments> delegation_errorDetection() {
 		return Stream.of(
-				Arguments.of( "*",  new CodeLocation(0,1,1) ),
-				Arguments.of( "/",  new CodeLocation(0,1,1) ),
-				Arguments.of( "%",  new CodeLocation(0,1,1) ),
-				Arguments.of( "**", new CodeLocation(0,2,2) ),
-				Arguments.of( "(",  new CodeLocation(0,1,1) ),
-				Arguments.of( "12", new CodeLocation(0,2,2) ),
-				Arguments.of( "xy", new CodeLocation(0,2,2) )
+				Arguments.of( "*",  "0:1:1" ),
+				Arguments.of( "/",  "0:1:1" ),
+				Arguments.of( "%",  "0:1:1" ),
+				Arguments.of( "**", "0:2:2" ),
+				Arguments.of( "(",  "0:1:1" ),
+				Arguments.of( "12", "0:2:2" ),
+				Arguments.of( "xy", "0:2:2" )
 		);
 	}
 	
@@ -138,7 +138,7 @@ class HandmadeParserAdditiveTest extends HandmadeParserUtils {
 
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void summand_detectsSyntaxErrors( String input, CodeLocation location ){
+	void summand_detectsSyntaxErrors( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		
@@ -151,7 +151,7 @@ class HandmadeParserAdditiveTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void summand1_rejectsOtherThan_PLUS( String input, CodeLocation location ){
+	void summand1_rejectsOtherThan_PLUS( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		
@@ -163,7 +163,7 @@ class HandmadeParserAdditiveTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void summand2_rejectsOtherThan_MINUS( String input, CodeLocation location ){
+	void summand2_rejectsOtherThan_MINUS( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		

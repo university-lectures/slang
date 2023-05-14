@@ -23,27 +23,27 @@ class HandmadeParserAtomicsTest extends HandmadeParserUtils {
 	
 	private static Stream<Arguments> delegation_errorDetection() {
 		return Stream.of(
-				Arguments.of( "+",  new CodeLocation(0,1,1) ),
-				Arguments.of( "-",  new CodeLocation(0,1,1) ),
-				Arguments.of( "*",  new CodeLocation(0,1,1) ),
-				Arguments.of( "/",  new CodeLocation(0,1,1) ),
-				Arguments.of( "%",  new CodeLocation(0,1,1) )
+				Arguments.of( "+",  "0:1:1" ),
+				Arguments.of( "-",  "0:1:1" ),
+				Arguments.of( "*",  "0:1:1" ),
+				Arguments.of( "/",  "0:1:1" ),
+				Arguments.of( "%",  "0:1:1" )
 		);
 	}
 	
 	private static Stream<Arguments> delegation_errorDetection1() {
 		return Stream.of(
-				Arguments.of( "+",  new CodeLocation(0,1,1) ),
-				Arguments.of( "-",  new CodeLocation(0,1,1) ),
-				Arguments.of( "12", new CodeLocation(0,2,2) ),
-				Arguments.of( "xy", new CodeLocation(0,2,2) )
+				Arguments.of( "+",  "0:1:1" ),
+				Arguments.of( "-",  "0:1:1" ),
+				Arguments.of( "12", "0:2:2" ),
+				Arguments.of( "xy", "0:2:2" )
 		);
 	}
 	
 	private static Stream<Arguments> delegation_errorDetection2() {
 		return Stream.of(
-				Arguments.of( "( 42 +", "+", new CodeLocation(0,5,5), new CodeLocation(0,6,6) ),
-				Arguments.of( "( 42",   "",  new CodeLocation(0,4,4), new CodeLocation(0,4,4) )
+				Arguments.of( "( 42 +", "+", "0:5:5", "0:6:6" ),
+				Arguments.of( "( 42",   "",  "0:4:4", "0:4:4" )
 		);
 	}
 	
@@ -93,7 +93,7 @@ class HandmadeParserAtomicsTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void atomicExpr_detectsSyntaxErrors( String input, CodeLocation location ){
+	void atomicExpr_detectsSyntaxErrors( String input, @CodeLoc CodeLocation location ){
 		initializeParser( input );
 		
 		assertThatExceptionOfType( RuntimeException.class ).isThrownBy(()->{
@@ -105,7 +105,7 @@ class HandmadeParserAtomicsTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection1")
-	void atomicExpr1_rejectsOtherThan_LPAREN( String input, CodeLocation location ){
+	void atomicExpr1_rejectsOtherThan_LPAREN( String input, @CodeLoc CodeLocation location ){
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( parseNumericLiteral ).when( spy ).conditionalExpression( );
 		
@@ -117,7 +117,7 @@ class HandmadeParserAtomicsTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection2")
-	void atomicExpr1_rejectsOtherThan_RPAREN( String input, String error, CodeLocation begin, CodeLocation end ){
+	void atomicExpr1_rejectsOtherThan_RPAREN( String input, String error, @CodeLoc CodeLocation begin, @CodeLoc CodeLocation end ){
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( parseNumericLiteral ).when( spy ).conditionalExpression( );
 		

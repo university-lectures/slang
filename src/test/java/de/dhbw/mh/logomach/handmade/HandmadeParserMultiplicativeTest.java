@@ -27,10 +27,10 @@ class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
 	
 	private static Stream<Arguments> delegation_errorDetection() {
 		return Stream.of(
-				Arguments.of( "**", new CodeLocation(0,2,2) ),
-				Arguments.of( "(",  new CodeLocation(0,1,1) ),
-				Arguments.of( "12", new CodeLocation(0,2,2) ),
-				Arguments.of( "xy", new CodeLocation(0,2,2) )
+				Arguments.of( "**", "0:2:2" ),
+				Arguments.of( "(",  "0:1:1" ),
+				Arguments.of( "12", "0:2:2" ),
+				Arguments.of( "xy", "0:2:2" )
 		);
 	}
 	
@@ -166,7 +166,7 @@ class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
 
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void factor_detectsSyntaxErrors( String input, CodeLocation location ){
+	void factor_detectsSyntaxErrors( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		
@@ -179,7 +179,7 @@ class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void factor1_rejectsOtherThan_ASTERISK( String input, CodeLocation location ){
+	void factor1_rejectsOtherThan_ASTERISK( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		
@@ -191,7 +191,7 @@ class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void factor2_rejectsOtherThan_SLASH( String input, CodeLocation location ){
+	void factor2_rejectsOtherThan_SLASH( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		
@@ -203,7 +203,7 @@ class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void factor3_rejectsOtherThan_PERCENT( String input, CodeLocation location ){
+	void factor3_rejectsOtherThan_PERCENT( String input, @CodeLoc CodeLocation location ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
 		initializeParser( input );
 		

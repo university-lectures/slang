@@ -21,9 +21,9 @@ class HandmadeParserSignedTermTest extends HandmadeParserUtils {
 	
 	private static Stream<Arguments> delegation_errorDetection() {
 		return Stream.of(
-				Arguments.of( "<",  new CodeLocation(0,1,1) ),
-				Arguments.of( ">",  new CodeLocation(0,1,1) ),
-				Arguments.of( "<=", new CodeLocation(0,2,2) )
+				Arguments.of( "<",  "0:1:1" ),
+				Arguments.of( ">",  "0:1:1" ),
+				Arguments.of( "<=", "0:2:2" )
 		);
 	}
 	
@@ -71,7 +71,7 @@ class HandmadeParserSignedTermTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void signedTerm_detectsSyntaxErrors( String input, CodeLocation location ){
+	void signedTerm_detectsSyntaxErrors( String input, @CodeLoc CodeLocation location ){
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( returnDummyAst ).when( spy ).exponentiation( );
 		
@@ -84,7 +84,7 @@ class HandmadeParserSignedTermTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void signedTerm1_rejectsOtherThan_PLUS( String input, CodeLocation location ){
+	void signedTerm1_rejectsOtherThan_PLUS( String input, @CodeLoc CodeLocation location ){
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( returnDummyAst ).when( spy ).exponentiation( );
 		
@@ -96,7 +96,7 @@ class HandmadeParserSignedTermTest extends HandmadeParserUtils {
 	
 	@ParameterizedTest
 	@MethodSource("delegation_errorDetection")
-	void signedTerm2_rejectsOtherThan_MINUS( String input, CodeLocation location ){
+	void signedTerm2_rejectsOtherThan_MINUS( String input, @CodeLoc CodeLocation location ){
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( returnDummyAst ).when( spy ).exponentiation( );
 		
