@@ -12,27 +12,27 @@ import org.junit.platform.suite.api.Suite;
 
 import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.craft.CharacterStream;
-import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
+import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
 
 @Suite
 @SelectClasses({
-	HandmadeParserCondOrTest.class,
-	HandmadeParserCondAndTest.class,
-	HandmadeParserEquationTest.class,
-	HandmadeParserRelationalTest.class,
-	HandmadeParserAdditiveTest.class,
-	HandmadeParserMultiplicativeTest.class,
-	HandmadeParserSignedTermTest.class,
-	HandmadeParserExponentiationTest.class,
-	HandmadeParserAtomicsTest.class,
-	HandmadeParserLiteralTest.class
+	CraftedSlangParserCondOrTest.class,
+	CraftedSlangParserCondAndTest.class,
+	CraftedSlangParserEquationTest.class,
+	CraftedSlangParserRelationalTest.class,
+	CraftedSlangParserAdditiveTest.class,
+	CraftedSlangParserMultiplicativeTest.class,
+	CraftedSlangParserSignedTermTest.class,
+	CraftedSlangParserExponentiationTest.class,
+	CraftedSlangParserAtomicsTest.class,
+	CraftedSlangParserLiteralTest.class
 	})
-public class HandmadeParserTestSuite {
+public class CraftedSlangParserTestSuite {
 	
 	public static final class Environment {
-		public final HandmadeLexer LEXER;
+		public final CraftedSlangLexer LEXER;
 		public final AbstractParserLL1 PARSER;
-		public Environment( HandmadeLexer lexer, AbstractParserLL1 parser ){
+		public Environment( CraftedSlangLexer lexer, AbstractParserLL1 parser ){
 			super( );
 			LEXER = lexer;
 			PARSER = parser;
@@ -41,8 +41,8 @@ public class HandmadeParserTestSuite {
 	
 	public static Environment parserFor( String input ){
 		CharacterStream stream = CharacterStream.fromString( input );
-		HandmadeLexer  lexer  = HandmadeLexer.on( stream );
-		AbstractParserLL1 parser = new HandmadeParserLL1( lexer );
+		CraftedSlangLexer  lexer  = CraftedSlangLexer.on( stream );
+		AbstractParserLL1 parser = new CraftedSlangParser( lexer );
 		return new Environment( lexer, parser );
 	}
 	

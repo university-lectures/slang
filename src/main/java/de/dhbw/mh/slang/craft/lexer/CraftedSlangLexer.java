@@ -8,7 +8,7 @@ import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
 import de.dhbw.mh.slang.craft.Token.Type;
 
-public class HandmadeLexer {
+public class CraftedSlangLexer {
 	
 	private static final Map<String, Token.Type> RESERVED_KEYWORDS = new HashMap<>();
 	
@@ -27,7 +27,7 @@ public class HandmadeLexer {
 	private Token currentToken;
 	private StringBuilder lexeme;
 	
-	private HandmadeLexer( CharacterStream inputStream ){
+	private CraftedSlangLexer( CharacterStream inputStream ){
 		super( );
 		INPUT_STREAM = inputStream;
 		line   = previousLine   = 0;
@@ -38,8 +38,8 @@ public class HandmadeLexer {
 		advance( );
 	}
 	
-	public static HandmadeLexer on( CharacterStream inputStream ){
-		return new HandmadeLexer( inputStream );
+	public static CraftedSlangLexer on( CharacterStream inputStream ){
+		return new CraftedSlangLexer( inputStream );
 	}
 	
 	public Token lookahead( ){

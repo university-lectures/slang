@@ -33,14 +33,14 @@ import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
-import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
+import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
 import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 
-public class HandmadeParserLL1 extends AbstractParserLL1 {
+public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	private static final String PARSER_ERROR_MESSAGE = "mismatched input '%s' at %s-%s, expected %s";
 	
-	public HandmadeParserLL1( HandmadeLexer lexer ){
+	public CraftedSlangParser( CraftedSlangLexer lexer ){
 		super( lexer );
 	}
 	

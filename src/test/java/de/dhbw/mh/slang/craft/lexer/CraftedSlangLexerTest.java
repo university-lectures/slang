@@ -12,9 +12,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import de.dhbw.mh.slang.craft.CharacterStream;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
-import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
+import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
 
-class HandmadeLexerTest {
+class CraftedSlangLexerTest {
 
 	private static Stream<Arguments> inputToToken() {
 		return Stream.of(
@@ -93,7 +93,7 @@ class HandmadeLexerTest {
 	@MethodSource("inputToToken")
 	void test( String input, Token result ){
 		CharacterStream inputStream = CharacterStream.fromString( input );
-		HandmadeLexer lexer = HandmadeLexer.on( inputStream );
+		CraftedSlangLexer lexer = CraftedSlangLexer.on( inputStream );
 		lexer.lookahead();
 		assertThat( lexer.lookahead() ).isNotNull();
 		assertThat( lexer.lookahead().TYPE ).isSameAs( result.TYPE );
@@ -111,7 +111,7 @@ class HandmadeLexerTest {
 	@MethodSource("inputToToken")
 	void testMultipleTokens( ){
 		CharacterStream inputStream = CharacterStream.fromString( "s = 1/2 * a * t**2\r\n  + v * t\r\n  + s_0;" );
-		HandmadeLexer lexer = HandmadeLexer.on( inputStream );
+		CraftedSlangLexer lexer = CraftedSlangLexer.on( inputStream );
 		
 		assertThat( lexer.lookahead() ).isNotNull();
 		assertThat( lexer.lookahead().TYPE ).isSameAs( Token.Type.IDENTIFIER );
@@ -292,7 +292,7 @@ class HandmadeLexerTest {
 	@MethodSource("inputToToken")
 	void testLexerReset( ){
 		CharacterStream inputStream = CharacterStream.fromString( "s = 1/2 * a * t**2\r\n  + v * t\r\n  + s_0;" );
-		HandmadeLexer lexer = HandmadeLexer.on( inputStream );
+		CraftedSlangLexer lexer = CraftedSlangLexer.on( inputStream );
 		
 		assertThat( lexer.lookahead() ).isNotNull();
 		assertThat( lexer.lookahead().TYPE ).isSameAs( Token.Type.IDENTIFIER );

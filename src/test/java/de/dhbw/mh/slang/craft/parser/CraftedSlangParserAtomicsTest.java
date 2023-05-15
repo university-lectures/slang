@@ -21,7 +21,7 @@ import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.craft.CodeLoc;
 import de.dhbw.mh.slang.craft.CodeLocation;
 
-class HandmadeParserAtomicsTest extends HandmadeParserUtils {
+class CraftedSlangParserAtomicsTest extends CraftedSlangParserUtils {
 	
 	
 	private static Stream<Arguments> delegation_errorDetection() {

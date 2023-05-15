@@ -12,13 +12,13 @@ import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.craft.CharacterStream;
 import de.dhbw.mh.slang.craft.Token;
 import de.dhbw.mh.slang.craft.Token.Type;
-import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
+import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
 import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 
-public class HandmadeParserUtils {
+public class CraftedSlangParserUtils {
 	
-	protected HandmadeLexer  lexer;
-	protected HandmadeParserLL1 parser = new HandmadeParserLL1( lexer );
+	protected CraftedSlangLexer  lexer;
+	protected CraftedSlangParser parser = new CraftedSlangParser( lexer );
 	
 	/**
 	 * The lexer must be reinitialized at the beginning of each test.
@@ -34,11 +34,11 @@ public class HandmadeParserUtils {
 	
 	protected void initializeParser( String input ){
 		CharacterStream stream = CharacterStream.fromString( input );
-		lexer  = HandmadeLexer.on( stream );
-		parser = new HandmadeParserLL1( lexer );
+		lexer  = CraftedSlangLexer.on( stream );
+		parser = new CraftedSlangParser( lexer );
 	}
 	
-	protected HandmadeParserLL1 createSpy( String input ){
+	protected CraftedSlangParser createSpy( String input ){
 		initializeParser( input );
 		return Mockito.spy( parser );
 	}

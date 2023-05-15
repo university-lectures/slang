@@ -19,7 +19,7 @@ import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.craft.CodeLoc;
 import de.dhbw.mh.slang.craft.CodeLocation;
 
-class HandmadeParserLiteralTest extends HandmadeParserUtils {
+class CraftedSlangParserLiteralTest extends CraftedSlangParserUtils {
 	
 	
 	private static Stream<Arguments> delegation_errorDetection() {

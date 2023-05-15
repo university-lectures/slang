@@ -20,7 +20,7 @@ import de.dhbw.mh.slang.ast.AstUnaryOperation;
 import de.dhbw.mh.slang.craft.CodeLoc;
 import de.dhbw.mh.slang.craft.CodeLocation;
 
-class HandmadeParserSignedTermTest extends HandmadeParserUtils {
+class CraftedSlangParserSignedTermTest extends CraftedSlangParserUtils {
 	
 	private static Stream<Arguments> delegation_errorDetection() {
 		return Stream.of(

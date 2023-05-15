@@ -23,7 +23,7 @@ import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.craft.CodeLoc;
 import de.dhbw.mh.slang.craft.CodeLocation;
 
-class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
+class CraftedSlangParserMultiplicativeTest extends CraftedSlangParserUtils {
 	
 	private static AstNode DUMMY_LITERAL1 = new AstLiteral( new I8((byte)42) );
 	
@@ -81,7 +81,7 @@ class HandmadeParserMultiplicativeTest extends HandmadeParserUtils {
 	@ParameterizedTest
 	@MethodSource("end_to_end_inputs")
 	void e2e_multiplicativeExpr_is_leftAssociative( String input, String expectedTree ){
-		HandmadeParserLL1 spy = createSpy( input );
+		CraftedSlangParser spy = createSpy( input );
 		Mockito.doAnswer( parseNumericLiteral ).when( spy ).signedTerm( );
 		
 		AstNode result = spy.multiplicativeExpression( );

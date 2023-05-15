@@ -3,13 +3,13 @@ package de.dhbw.mh.slang.craft.parser;
 import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.craft.Token;
 import de.dhbw.mh.slang.craft.Token.Type;
-import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
+import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
 
 public abstract class AbstractParserLL1 {
 	
-	protected final HandmadeLexer LEXER;
+	protected final CraftedSlangLexer LEXER;
 	
-	public AbstractParserLL1( HandmadeLexer lexer ){
+	public AbstractParserLL1( CraftedSlangLexer lexer ){
 		super( );
 		LEXER = lexer;
 	}
