@@ -1,4 +1,4 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft.lexer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

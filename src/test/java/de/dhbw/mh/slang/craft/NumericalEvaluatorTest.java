@@ -1,4 +1,4 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -16,7 +16,7 @@ import de.dhbw.mh.slang.I32;
 import de.dhbw.mh.slang.I64;
 import de.dhbw.mh.slang.I8;
 import de.dhbw.mh.slang.NumericValue;
-import de.dhbw.mh.slang.handmade.NumericalEvaluator;
+import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 
 class NumericalEvaluatorTest {
 	

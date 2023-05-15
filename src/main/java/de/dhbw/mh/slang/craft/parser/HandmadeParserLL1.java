@@ -1,26 +1,26 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft.parser;
 
-import static de.dhbw.mh.slang.handmade.Token.Type.ASTERISK;
-import static de.dhbw.mh.slang.handmade.Token.Type.DIVIDE;
-import static de.dhbw.mh.slang.handmade.Token.Type.EOF;
-import static de.dhbw.mh.slang.handmade.Token.Type.EQUAL;
-import static de.dhbw.mh.slang.handmade.Token.Type.FALSE;
-import static de.dhbw.mh.slang.handmade.Token.Type.GREATER;
-import static de.dhbw.mh.slang.handmade.Token.Type.GREATER_EQUAL;
-import static de.dhbw.mh.slang.handmade.Token.Type.IDENTIFIER;
-import static de.dhbw.mh.slang.handmade.Token.Type.LAND;
-import static de.dhbw.mh.slang.handmade.Token.Type.LESS;
-import static de.dhbw.mh.slang.handmade.Token.Type.LESS_EQUAL;
-import static de.dhbw.mh.slang.handmade.Token.Type.LOR;
-import static de.dhbw.mh.slang.handmade.Token.Type.LPAREN;
-import static de.dhbw.mh.slang.handmade.Token.Type.MINUS;
-import static de.dhbw.mh.slang.handmade.Token.Type.MODULO;
-import static de.dhbw.mh.slang.handmade.Token.Type.NOT_EQUAL;
-import static de.dhbw.mh.slang.handmade.Token.Type.NUMERIC_LITERAL;
-import static de.dhbw.mh.slang.handmade.Token.Type.PLUS;
-import static de.dhbw.mh.slang.handmade.Token.Type.POWER;
-import static de.dhbw.mh.slang.handmade.Token.Type.RPAREN;
-import static de.dhbw.mh.slang.handmade.Token.Type.TRUE;
+import static de.dhbw.mh.slang.craft.Token.Type.ASTERISK;
+import static de.dhbw.mh.slang.craft.Token.Type.DIVIDE;
+import static de.dhbw.mh.slang.craft.Token.Type.EOF;
+import static de.dhbw.mh.slang.craft.Token.Type.EQUAL;
+import static de.dhbw.mh.slang.craft.Token.Type.FALSE;
+import static de.dhbw.mh.slang.craft.Token.Type.GREATER;
+import static de.dhbw.mh.slang.craft.Token.Type.GREATER_EQUAL;
+import static de.dhbw.mh.slang.craft.Token.Type.IDENTIFIER;
+import static de.dhbw.mh.slang.craft.Token.Type.LAND;
+import static de.dhbw.mh.slang.craft.Token.Type.LESS;
+import static de.dhbw.mh.slang.craft.Token.Type.LESS_EQUAL;
+import static de.dhbw.mh.slang.craft.Token.Type.LOR;
+import static de.dhbw.mh.slang.craft.Token.Type.LPAREN;
+import static de.dhbw.mh.slang.craft.Token.Type.MINUS;
+import static de.dhbw.mh.slang.craft.Token.Type.MODULO;
+import static de.dhbw.mh.slang.craft.Token.Type.NOT_EQUAL;
+import static de.dhbw.mh.slang.craft.Token.Type.NUMERIC_LITERAL;
+import static de.dhbw.mh.slang.craft.Token.Type.PLUS;
+import static de.dhbw.mh.slang.craft.Token.Type.POWER;
+import static de.dhbw.mh.slang.craft.Token.Type.RPAREN;
+import static de.dhbw.mh.slang.craft.Token.Type.TRUE;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,11 +29,12 @@ import java.util.stream.Stream;
 
 import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.NumericValue;
-import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
-import de.dhbw.mh.slang.ast.AstUnaryOperation;
-import de.dhbw.mh.slang.ast.AstVariable;
+import de.dhbw.mh.slang.craft.CodeLocation;
+import de.dhbw.mh.slang.craft.Token;
+import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
+import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 
 public class HandmadeParserLL1 extends AbstractParserLL1 {
 	

@@ -1,4 +1,4 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft.parser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -16,8 +16,8 @@ import org.mockito.Mockito;
 
 import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.ast.AstLiteral;
-import de.dhbw.mh.slang.handmade.AbstractParserLL1;
-import de.dhbw.mh.slang.handmade.CodeLocation;
+import de.dhbw.mh.slang.craft.CodeLoc;
+import de.dhbw.mh.slang.craft.CodeLocation;
 
 class HandmadeParserLiteralTest extends HandmadeParserUtils {
 	

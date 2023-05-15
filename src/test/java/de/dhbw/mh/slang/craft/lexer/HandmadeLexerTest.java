@@ -1,4 +1,4 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft.lexer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,10 +9,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import de.dhbw.mh.slang.handmade.CharacterStream;
-import de.dhbw.mh.slang.handmade.CodeLocation;
-import de.dhbw.mh.slang.handmade.HandmadeLexer;
-import de.dhbw.mh.slang.handmade.Token;
+import de.dhbw.mh.slang.craft.CharacterStream;
+import de.dhbw.mh.slang.craft.CodeLocation;
+import de.dhbw.mh.slang.craft.Token;
+import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
 
 class HandmadeLexerTest {
 

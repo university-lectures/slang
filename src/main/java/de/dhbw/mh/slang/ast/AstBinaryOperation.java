@@ -1,6 +1,6 @@
 package de.dhbw.mh.slang.ast;
 
-import de.dhbw.mh.slang.handmade.CodeLocation;
+import de.dhbw.mh.slang.craft.CodeLocation;
 
 public class AstBinaryOperation extends AstNode {
 	

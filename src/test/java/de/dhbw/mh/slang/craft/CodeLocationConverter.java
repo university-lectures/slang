@@ -1,9 +1,9 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft;
 
 import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
-import de.dhbw.mh.slang.handmade.CodeLocation;
+import de.dhbw.mh.slang.craft.CodeLocation;
 
 public class CodeLocationConverter extends TypedArgumentConverter<String, CodeLocation> {
 	

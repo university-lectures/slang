@@ -1,6 +1,9 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft.parser;
 
 import de.dhbw.mh.slang.ast.AstNode;
+import de.dhbw.mh.slang.craft.Token;
+import de.dhbw.mh.slang.craft.Token.Type;
+import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
 
 public abstract class AbstractParserLL1 {
 	

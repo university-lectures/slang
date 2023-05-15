@@ -1,7 +1,12 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft.lexer;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import de.dhbw.mh.slang.craft.CharacterStream;
+import de.dhbw.mh.slang.craft.CodeLocation;
+import de.dhbw.mh.slang.craft.Token;
+import de.dhbw.mh.slang.craft.Token.Type;
 
 public class HandmadeLexer {
 	

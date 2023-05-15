@@ -1,4 +1,4 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft.parser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,10 +11,8 @@ import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
 import de.dhbw.mh.slang.ast.AstNode;
-import de.dhbw.mh.slang.handmade.AbstractParserLL1;
-import de.dhbw.mh.slang.handmade.CharacterStream;
-import de.dhbw.mh.slang.handmade.HandmadeLexer;
-import de.dhbw.mh.slang.handmade.HandmadeParserLL1;
+import de.dhbw.mh.slang.craft.CharacterStream;
+import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
 
 @Suite
 @SelectClasses({

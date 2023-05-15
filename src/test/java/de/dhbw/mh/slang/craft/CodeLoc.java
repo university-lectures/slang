@@ -1,4 +1,4 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

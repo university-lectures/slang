@@ -1,4 +1,4 @@
-package de.dhbw.mh.slang.handmade;
+package de.dhbw.mh.slang.craft.parser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -9,11 +9,11 @@ import de.dhbw.mh.slang.I8;
 import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
-import de.dhbw.mh.slang.handmade.CharacterStream;
-import de.dhbw.mh.slang.handmade.HandmadeLexer;
-import de.dhbw.mh.slang.handmade.HandmadeParserLL1;
-import de.dhbw.mh.slang.handmade.NumericalEvaluator;
-import de.dhbw.mh.slang.handmade.Token;
+import de.dhbw.mh.slang.craft.CharacterStream;
+import de.dhbw.mh.slang.craft.Token;
+import de.dhbw.mh.slang.craft.Token.Type;
+import de.dhbw.mh.slang.craft.lexer.HandmadeLexer;
+import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 
 public class HandmadeParserUtils {
 	
