@@ -1,0 +1,179 @@
+package de.dhbw.mh.slang.handmade;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
+
+import de.dhbw.mh.slang.ast.AstLiteral;
+import de.dhbw.mh.slang.ast.AstNode;
+import de.dhbw.mh.slang.ast.AstVariable;
+import de.dhbw.mh.slang.handmade.AbstractParserLL1;
+import de.dhbw.mh.slang.handmade.CodeLocation;
+
+class HandmadeParserAtomicsTest extends HandmadeParserUtils {
+	
+	
+	private static Stream<Arguments> delegation_errorDetection() {
+		return Stream.of(
+				Arguments.of( "+",  "0:1:1" ),
+				Arguments.of( "-",  "0:1:1" ),
+				Arguments.of( "*",  "0:1:1" ),
+				Arguments.of( "/",  "0:1:1" ),
+				Arguments.of( "%",  "0:1:1" ),
+				Arguments.of( "**", "0:2:2" ),
+				Arguments.of( "<",  "0:1:1" ),
+				Arguments.of( ">",  "0:1:1" ),
+				Arguments.of( "<=", "0:2:2" ),
+				Arguments.of( ">=", "0:2:2" ),
+				Arguments.of( "==", "0:2:2" ),
+				Arguments.of( "!=", "0:2:2" ),
+				Arguments.of( "&&", "0:2:2" ),
+				Arguments.of( "||", "0:2:2" ),
+				Arguments.of( ")",  "0:1:1" ),
+				Arguments.of( "",   "0:0:0" )
+		);
+	}
+	
+	private static Stream<Arguments> delegation_errorDetection2() {
+		return Stream.of(
+				Arguments.of( "( 42 +", "+", "0:5:5", "0:6:6" ),
+				Arguments.of( "( 42 (", "(", "0:5:5", "0:6:6" ),
+				Arguments.of( "( 42",   "",  "0:4:4", "0:4:4" )
+		);
+	}
+	
+	
+	
+	@ParameterizedTest
+	@ValueSource(strings = {"("})
+	void atomicExpr_delegatesTo_atomicExpr1( String input ){
+		AbstractParserLL1 spy = createSpy( input );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).atomicExpression1( );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).atomicExpression2( );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).atomicExpression3( );
+		
+		spy.atomicExpression( );
+		verify( spy, times(1) ).atomicExpression1( );
+		verify( spy, times(0) ).atomicExpression2( );
+		verify( spy, times(0) ).atomicExpression3( );
+	}
+	
+	@ParameterizedTest
+	@ValueSource(strings = {"it"})
+	void atomicExpr_delegatesTo_atomicExpr2( String input ){
+		AbstractParserLL1 spy = createSpy( input );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).atomicExpression1( );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).atomicExpression2( );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).atomicExpression3( );
+		
+		spy.atomicExpression( );
+		verify( spy, times(0) ).atomicExpression1( );
+		verify( spy, times(1) ).atomicExpression2( );
+		verify( spy, times(0) ).atomicExpression3( );
+	}
+	
+	@ParameterizedTest
+	@ValueSource(strings = {"74", "true", "false"})
+	void atomicExpr_delegatesTo_atomicExpr3( String input ){
+		AbstractParserLL1 spy = createSpy( input );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).atomicExpression1( );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).atomicExpression2( );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).atomicExpression3( );
+		
+		spy.atomicExpression( );
+		verify( spy, times(0) ).atomicExpression1( );
+		verify( spy, times(0) ).atomicExpression2( );
+		verify( spy, times(1) ).atomicExpression3( );
+	}
+	
+	@ParameterizedTest
+	@MethodSource("delegation_errorDetection")
+	void atomicExpr_detectsSyntaxErrors( String input, @CodeLoc CodeLocation location ){
+		initializeParser( input );
+		
+		assertThatExceptionOfType( RuntimeException.class ).isThrownBy(()->{
+			parser.atomicExpression( );
+		}).withMessageStartingWith( "mismatched input '%s' at 0:0:0-%s, expected", input, location )
+		.withMessageContainingAll( "'('", "<ID>", "<NUM_LIT>" );
+	}
+	
+	
+	@ParameterizedTest
+	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "12,0:2:2", "xy,0:2:2", "true,0:4:4", "false,0:5:5" })
+	void atomicExpr1_rejectsOtherThan_LPAREN( String input, @CodeLoc CodeLocation location ){
+		AbstractParserLL1 spy = createSpy( input );
+		Mockito.doAnswer( parseNumericLiteral ).when( spy ).conditionalExpression( );
+		
+		assertThatExceptionOfType( RuntimeException.class ).isThrownBy(()->{
+			spy.atomicExpression1( );
+		}).withMessageStartingWith( "mismatched input '%s' at 0:0:0-%s, expected", input, location )
+		.withMessageContainingAll( "'('" );
+	}
+	
+	@ParameterizedTest
+	@MethodSource("delegation_errorDetection2")
+	void atomicExpr1_rejectsOtherThan_RPAREN( String input, String error, @CodeLoc CodeLocation begin, @CodeLoc CodeLocation end ){
+		AbstractParserLL1 spy = createSpy( input );
+		Mockito.doAnswer( parseNumericLiteral ).when( spy ).conditionalExpression( );
+		
+		assertThatExceptionOfType( RuntimeException.class ).isThrownBy(()->{
+			spy.atomicExpression1( );
+		}).withMessageStartingWith( "mismatched input '%s' at %s-%s, expected", error, begin, end )
+		.withMessageContainingAll( "')'" );
+	}
+	
+	@ParameterizedTest
+	@MethodSource("delegation_errorDetection")
+	@CsvSource({ "(,0:1:1", "12,0:2:2", "true,0:4:4", "false,0:5:5" })
+	void atomicExpr2_rejectsOtherThan_IDENTIFIER( String input, @CodeLoc CodeLocation location ){
+		AbstractParserLL1 spy = createSpy( input );
+		Mockito.doAnswer( parseNumericLiteral ).when( spy ).conditionalExpression( );
+		
+		assertThatExceptionOfType( RuntimeException.class ).isThrownBy(()->{
+			spy.atomicExpression2( );
+		}).withMessageStartingWith( "mismatched input '%s' at 0:0:0-%s, expected", input, location )
+		.withMessageContainingAll( "<ID>" );
+	}
+	
+	@Test
+	void atomicExpr1_calls_conditionalExpr( ){
+		String input = "( 123 )";
+		AbstractParserLL1 spy = createSpy( input );
+		Mockito.doAnswer( parseNumericLiteral ).when( spy ).conditionalExpression( );
+		
+		spy.atomicExpression1( );
+		verify( spy, times(1) ).conditionalExpression( );
+	}
+	
+	@Test
+	void atomicExpr2_returns_AstVariable( ){
+		String input = "xy";
+		initializeParser( input );
+		
+		AstNode result = parser.atomicExpression2( );
+		assertThat( result ).isInstanceOf( AstVariable.class );
+	}
+	
+	@Test
+	void atomicExpr3_returns_literal( ){
+		String input = "42";
+		AbstractParserLL1 spy = createSpy( input );
+		Mockito.doAnswer( returnDummyAst ).when( spy ).literal( );
+		
+		AstLiteral result = (AstLiteral) spy.atomicExpression3( );
+		assertThat( result ).isSameAs( DUMMY_AST );
+	}
+	
+}
