@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.NumericValue;
+import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.craft.CodeLocation;
@@ -152,32 +153,48 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	@Override
 	public AstNode equation( ){
-		// TODO Auto-generated method stub
-		return super.equation( );
+		if (PLUS == LEXER.lookahead().TYPE ||
+				MINUS == LEXER.lookahead().TYPE ||
+				LPAREN == LEXER.lookahead().TYPE ||
+				IDENTIFIER == LEXER.lookahead().TYPE ||
+				NUMERIC_LITERAL == LEXER.lookahead().TYPE) {
+			return equalities(relationalExpression());
+		}
+
+		return equalities(relationalExpression());
+		//throw parsingException( Selector.EQUALITIES );
 	}
 	
 	@Override
 	AstNode equalities( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.equalities( previous );
+		if ( EQUAL == LEXER.lookahead().TYPE ){
+			return equalities1(previous);
+		}
+		if ( NOT_EQUAL == LEXER.lookahead().TYPE ){
+			return equalities2(previous);
+		}
+		if ( Selector.EQUALITIES3.contains( LEXER.lookahead().TYPE ) ) {
+			return equalities3(previous);
+		}
+
+		throw parsingException( Selector.EQUALITIES );
 	}
 	
 	@Override
 	AstNode equalities1( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.equalities1( previous );
+		match( Token.Type.EQUAL );
+		return new AstBinaryOperation( LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.COMPARE_EQUAL, equalities(relationalExpression()) );
 	}
 	
 	@Override
 	AstNode equalities2( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.equalities2( previous );
+		match( Token.Type.NOT_EQUAL );
+		return new AstBinaryOperation( LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.COMPARE_UNEQUAL, equalities(relationalExpression()) );
 	}
 	
 	@Override
 	AstNode equalities3( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.equalities3( previous );
+		return previous;
 	}
 	
 	/*===========================================================
