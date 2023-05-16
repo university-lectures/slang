@@ -22,8 +22,10 @@ import static de.dhbw.mh.slang.craft.Token.Type.POWER;
 import static de.dhbw.mh.slang.craft.Token.Type.RPAREN;
 import static de.dhbw.mh.slang.craft.Token.Type.TRUE;
 
+import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,8 +34,10 @@ import javax.management.RuntimeErrorException;
 import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.I32;
 import de.dhbw.mh.slang.NumericValue;
+import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
+import de.dhbw.mh.slang.ast.AstBinaryOperation.Operator;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
 import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
@@ -99,38 +103,43 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	@Override
 	public AstNode conditionalOrExpression( ){
-		if( LEXER.lookahead().TYPE == PLUS || LEXER.lookahead().TYPE == MINUS || LEXER.lookahead().TYPE == LPAREN || LEXER.lookahead().TYPE == IDENTIFIER || LEXER.lookahead().TYPE == NUMERIC_LITERAL ) {
-			return disjunction(conditionalAndExpression());
-		}
-		else {
-			throw new RuntimeException();
+		switch(LEXER.lookahead().TYPE) {
+			case PLUS:
+			case MINUS:
+			case LPAREN:
+			case IDENTIFIER:
+			case NUMERIC_LITERAL:
+				return this.disjunction(conditionalAndExpression());
+			default:
+				Set<Token.Type> acceptedTypes = setOf(PLUS, MINUS, LPAREN, IDENTIFIER, NUMERIC_LITERAL);
+				throw this.parsingException(acceptedTypes);
 		}
 	}
 	
 	@Override
 	AstNode disjunction( AstNode previous ){
-		if (LEXER.lookahead().TYPE == LOR) {
-			LEXER.advance();
-			//  || one literal or two ??
-			return this.disjunction1(previous);
-		} else if (LEXER.lookahead().TYPE == EOF || LEXER.lookahead().TYPE == RPAREN) {
-			return disjunction2(previous);
-		} else {
-			throw new RuntimeException();
+		switch(LEXER.lookahead().TYPE) {
+			case LOR:
+				return this.disjunction1(previous);
+			case EOF:
+			case RPAREN:
+				return this.disjunction2(previous);
+			default:
+				throw this.parsingException(Selector.DISJUNCTION);
 		}
-		
 	}
 	
 	@Override
 	AstNode disjunction1( AstNode previous ){
-		return disjunction(conditionalAndExpression());
+		if(LEXER.lookahead().TYPE != LOR) {
+			throw this.parsingException(LOR);
+		}
+
+		return new AstBinaryOperation(this.LEXER.lookahead().BEGIN,previous, Operator.LOGICAL_OR ,conditionalAndExpression());
 	}
 	
 	@Override
 	AstNode disjunction2( AstNode previous ){
-		// create no node or empty ? 
-		NumericValue value = new I32(1);
-
 		return previous;
 	}
 	
