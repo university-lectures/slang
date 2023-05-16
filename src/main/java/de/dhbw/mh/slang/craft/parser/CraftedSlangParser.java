@@ -29,8 +29,10 @@ import java.util.stream.Stream;
 
 import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.NumericValue;
+import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
+import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
 import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
@@ -186,8 +188,20 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	@Override
 	public AstNode relationalExpression( ){
-		// TODO Auto-generated method stub
-		return super.relationalExpression( );
+		Token.Type type = LEXER.lookahead().TYPE;
+		String lexeme = LEXER.lookahead().LEXEME;
+
+		if (NUMERIC_LITERAL == type) {
+			LEXER.advance();
+			return relations(new AstLiteral(NumericalEvaluator.parse(lexeme)));
+		} else if (IDENTIFIER == type) {
+			return relations(new AstVariable(lexeme));
+		} else if (PLUS == type) {
+			//TODO
+			return super.relationalExpression();
+		} else {
+			throw new RuntimeException();
+		}
 	}
 	
 	@Override
