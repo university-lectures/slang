@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.NumericValue;
+import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.craft.CodeLocation;
@@ -304,7 +305,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	/*===========================================================
 	 * signedExpression
 	 *===========================================================*/
-	
+
 	@Override
 	public AstNode signedTerm( ){
 		// TODO Auto-generated method stub
@@ -332,31 +333,47 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	/*===========================================================
 	 * exponentiation
 	 *===========================================================*/
-	
+
 	@Override
-	public AstNode exponentiation( ){
-		// TODO Auto-generated method stub
-		return super.exponentiation( );
+	public AstNode exponentiation() {
+		AstNode result = this.atomicExpression();
+
+		if (LEXER.lookahead().TYPE == Token.Type.POWER) {
+			CodeLocation location = LEXER.lookahead().BEGIN;
+			LEXER.advance();
+			AstNode right = this.exponentiation();
+			result = new AstBinaryOperation(location, result, AstBinaryOperation.Operator.POWER, right);
+		}
+
+		return result;
 	}
-	
+
 	@Override
-	public AstNode exponent( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.exponent( previous );
+	public AstNode exponent(AstNode previous) {
+		if (LEXER.lookahead().TYPE == Token.Type.POWER) {
+			return this.exponent1(previous);
+		} else {
+			return this.exponent2(previous);
+		}
 	}
-	
+
 	@Override
-	public AstNode exponent1( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.exponent1( previous );
+	public AstNode exponent1(AstNode previous) {
+		if (LEXER.lookahead().TYPE == Token.Type.POWER) {
+			CodeLocation location = LEXER.lookahead().BEGIN;
+			LEXER.advance();
+			AstNode next = this.atomicExpression();
+			return new AstBinaryOperation(location, previous, AstBinaryOperation.Operator.POWER, next);
+		} else {
+			throw new RuntimeException("mismatched input, expected 'POWER'");
+		}
 	}
-	
+
 	@Override
-	public AstNode exponent2( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.exponent2( previous );
+	public AstNode exponent2(AstNode previous) {
+		return previous;
 	}
-	
+
 	/*===========================================================
 	 * atomicExpression
 	 *===========================================================*/
