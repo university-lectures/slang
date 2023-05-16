@@ -31,6 +31,7 @@ import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
+import de.dhbw.mh.slang.ast.AstUnaryOperation;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
 import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
@@ -306,28 +307,36 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 *===========================================================*/
 	
 	@Override
-	public AstNode signedTerm( ){
-		// TODO Auto-generated method stub
-		return super.signedTerm( );
-	}
-	
-	@Override
-	AstNode signedTerm1( ){
-		// TODO Auto-generated method stub
-		return super.signedTerm1( );
-	}
-	
-	@Override
-	AstNode signedTerm2( ){
-		// TODO Auto-generated method stub
-		return super.signedTerm2( );
-	}
-	
-	@Override
-	AstNode signedTerm3( ){
-		// TODO Auto-generated method stub
-		return super.signedTerm3( );
-	}
+    public AstNode signedTerm( ){
+        if( PLUS == LEXER.lookahead().TYPE ){
+            return signedTerm1( );
+        }
+        if( MINUS == LEXER.lookahead().TYPE ){
+            return signedTerm2( );
+        }
+        if(Selector.SIGNED_TERM3.contains(LEXER.lookahead().TYPE)){
+            return signedTerm3( );
+        }
+        throw parsingException( Selector.SIGNED_TERM );
+    }
+
+    @Override
+    AstNode signedTerm1( ){
+        match(PLUS);
+        return new AstUnaryOperation(LEXER.lookahead().BEGIN, AstUnaryOperation.Operator.POSITIVE_SIGN, exponentiation());
+    }
+
+    @Override
+    AstNode signedTerm2( ){
+        match(MINUS);
+        return new AstUnaryOperation(LEXER.lookahead().BEGIN, AstUnaryOperation.Operator.NEGATIVE_SIGN, exponentiation());
+
+    }
+
+    @Override
+    AstNode signedTerm3( ){
+        return exponentiation( );
+    }
 	
 	/*===========================================================
 	 * exponentiation
