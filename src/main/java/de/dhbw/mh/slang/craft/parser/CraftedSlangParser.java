@@ -162,7 +162,6 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		}
 
 		return equalities(relationalExpression());
-		//throw parsingException( Selector.EQUALITIES );
 	}
 	
 	@Override
@@ -183,13 +182,19 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	@Override
 	AstNode equalities1( AstNode previous ){
 		match( Token.Type.EQUAL );
-		return new AstBinaryOperation( LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.COMPARE_EQUAL, equalities(relationalExpression()) );
+		AstNode next = relationalExpression();
+		AstNode result = new AstBinaryOperation( LEXER.lookahead().BEGIN,
+				previous, AstBinaryOperation.Operator.COMPARE_EQUAL, next );
+		return equalities( result );
 	}
 	
 	@Override
 	AstNode equalities2( AstNode previous ){
 		match( Token.Type.NOT_EQUAL );
-		return new AstBinaryOperation( LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.COMPARE_UNEQUAL, equalities(relationalExpression()) );
+		AstNode next = relationalExpression();
+		AstNode result = new AstBinaryOperation( LEXER.lookahead().BEGIN,
+				previous, AstBinaryOperation.Operator.COMPARE_UNEQUAL, next );
+		return equalities( result );
 	}
 	
 	@Override
