@@ -307,27 +307,27 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 *===========================================================*/
 	
 	@Override
-    public AstNode signedTerm( ){
+    public AstNode signedTerm(){
         if( PLUS == LEXER.lookahead().TYPE ){
-            return signedTerm1( );
+            return signedTerm1();
         }
         if( MINUS == LEXER.lookahead().TYPE ){
-            return signedTerm2( );
+            return signedTerm2();
         }
         if(Selector.SIGNED_TERM3.contains(LEXER.lookahead().TYPE)){
-            return signedTerm3( );
+            return signedTerm3();
         }
-        throw parsingException( Selector.SIGNED_TERM );
+        throw parsingException(Selector.SIGNED_TERM);
     }
 
     @Override
-    AstNode signedTerm1( ){
+    AstNode signedTerm1(){
         match(PLUS);
         return new AstUnaryOperation(LEXER.lookahead().BEGIN, AstUnaryOperation.Operator.POSITIVE_SIGN, exponentiation());
     }
 
     @Override
-    AstNode signedTerm2( ){
+    AstNode signedTerm2(){
         match(MINUS);
         return new AstUnaryOperation(LEXER.lookahead().BEGIN, AstUnaryOperation.Operator.NEGATIVE_SIGN, exponentiation());
 
