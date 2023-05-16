@@ -27,7 +27,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.management.RuntimeErrorException;
+
 import de.dhbw.mh.slang.Bool;
+import de.dhbw.mh.slang.I32;
 import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
@@ -96,26 +99,39 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	@Override
 	public AstNode conditionalOrExpression( ){
-		// TODO Auto-generated method stub
-		return super.conditionalOrExpression( );
+		if( LEXER.lookahead().TYPE == PLUS || LEXER.lookahead().TYPE == MINUS || LEXER.lookahead().TYPE == LPAREN || LEXER.lookahead().TYPE == IDENTIFIER || LEXER.lookahead().TYPE == NUMERIC_LITERAL ) {
+			return disjunction(conditionalAndExpression());
+		}
+		else {
+			throw new RuntimeException();
+		}
 	}
 	
 	@Override
 	AstNode disjunction( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.disjunction( previous );
+		if (LEXER.lookahead().TYPE == LOR) {
+			LEXER.advance();
+			//  || one literal or two ??
+			return this.disjunction1(previous);
+		} else if (LEXER.lookahead().TYPE == EOF || LEXER.lookahead().TYPE == RPAREN) {
+			return disjunction2(previous);
+		} else {
+			throw new RuntimeException();
+		}
+		
 	}
 	
 	@Override
 	AstNode disjunction1( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.disjunction1( previous );
+		return disjunction(conditionalAndExpression());
 	}
 	
 	@Override
 	AstNode disjunction2( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.disjunction2( previous );
+		// create no node or empty ? 
+		NumericValue value = new I32(1);
+
+		return previous;
 	}
 	
 	/*===========================================================
