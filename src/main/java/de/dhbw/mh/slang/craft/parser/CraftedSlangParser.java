@@ -32,6 +32,7 @@ import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.ast.AstUnaryOperation;
+import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
 import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
@@ -372,26 +373,52 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	@Override
 	public AstNode atomicExpression( ){
-		// TODO Auto-generated method stub
-		return super.atomicExpression( );
+		switch (this.LEXER.lookahead().TYPE) {
+			case LPAREN:
+				return this.atomicExpression1();
+			case IDENTIFIER:
+				return this.atomicExpression2();
+			case NUMERIC_LITERAL:
+			case TRUE:
+			case FALSE:
+				return this.atomicExpression3();
+			default:
+				throw parsingException(Selector.ATOMICS);
+		}
 	}
 	
 	@Override
 	public AstNode atomicExpression1( ){
-		// TODO Auto-generated method stub
-		return super.atomicExpression1( );
+		match(LPAREN);
+		AstNode node = this.conditionalExpression();
+		match(RPAREN);
+
+		return node;
 	}
 	
 	@Override
 	public AstNode atomicExpression2( ){
-		// TODO Auto-generated method stub
-		return super.atomicExpression2( );
+		if (this.LEXER.lookahead().TYPE != IDENTIFIER) {
+			throw this.parsingException(IDENTIFIER);
+		}
+
+		AstVariable variable = new AstVariable(this.LEXER.lookahead().LEXEME);
+
+		this.LEXER.advance();
+
+		return variable;
 	}
 	
 	@Override
 	public AstNode atomicExpression3( ){
-		// TODO Auto-generated method stub
-		return super.atomicExpression3( );
+		Set<Token.Type> acceptedTypes = setOf(NUMERIC_LITERAL, TRUE, FALSE);
+		if (!acceptedTypes.contains(this.LEXER.lookahead().TYPE)) {
+			throw this.parsingException(acceptedTypes);
+		}
+
+		AstNode literal = this.literal();
+		this.LEXER.advance();
+		return literal;
 	}
 	
 	/*===========================================================
