@@ -263,73 +263,71 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		return super.summand3( previous );
 	}
 
-	/*===========================================================
-	 * multiplicativeExpression
-	 *===========================================================*/
+    /*===========================================================
+     * multiplicativeExpression
+     *===========================================================*/
 
-	@Override
-	public AstNode multiplicativeExpression() {
-		AstNode node = factor(signedTerm());
+    @Override
+    public AstNode multiplicativeExpression(){
+        switch (LEXER.lookahead().TYPE)
+        {
+            case PLUS:
+            case MINUS:
+            case LPAREN:
+            case IDENTIFIER:
+            case NUMERIC_LITERAL:
+                return factor(signedTerm());
+        }
 
-		while (true)
-		{
-			switch (LEXER.lookahead().TYPE)
-			{
-				case ASTERISK:
-					node = factor1(node);
-					break;
-				case DIVIDE:
-					node = factor2(node);
-					break;
-				case MODULO:
-					node = factor3(node);
-					break;
-				default:
-					return node;
-			}
-		}
-	}
+        return factor(signedTerm());
+    }
 
-	@Override
-	AstNode factor(AstNode previous) {
-		switch (LEXER.lookahead().TYPE)
-		{
-			case ASTERISK:
-				return factor1(previous);
-			case DIVIDE:
-				return factor2(previous);
-			case MODULO:
-				return factor3(previous);
-		}
+    @Override
+    AstNode factor(AstNode previous){
+        switch (LEXER.lookahead().TYPE)
+        {
+            case ASTERISK:
+                return factor1(previous);
+            case DIVIDE:
+                return factor2(previous);
+            case MODULO:
+                return factor3(previous);
+        }
 
-		if (Selector.FACTOR4.contains(LEXER.lookahead().TYPE))
-			return factor4(previous);
+        if (Selector.FACTOR4.contains(LEXER.lookahead().TYPE))
+            return factor4(previous);
 
-		throw parsingException(Selector.FACTOR);
-	}
+        throw parsingException(Selector.FACTOR);
+    }
 
-	@Override
-	AstNode factor1(AstNode previous) {
-		match(ASTERISK);
-		return new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.MULTIPLY, factor4(signedTerm()));
-	}
+    @Override
+    AstNode factor1(AstNode previous){
+        match(ASTERISK);
+        AstNode next = signedTerm();
+        AstNode result = new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.MULTIPLY, next);
+        return factor(result);
+    }
 
-	@Override
-	AstNode factor2(AstNode previous) {
-		match(DIVIDE);
-		return new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.DIVIDE, factor4(signedTerm()));
-	}
+    @Override
+    AstNode factor2(AstNode previous){
+        match(DIVIDE);
+        AstNode next = signedTerm();
+        AstNode result = new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.DIVIDE, next);
+        return factor(result);
+    }
 
-	@Override
-	AstNode factor3(AstNode previous) {
-		match(MODULO);
-		return new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.MODULO, factor4(signedTerm()));
-	}
+    @Override
+    AstNode factor3(AstNode previous){
+        match(MODULO);
+        AstNode next = signedTerm();
+        AstNode result = new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.MODULO, next);
+        return factor(result);
+    }
 
-	@Override
-	AstNode factor4(AstNode previous) {
-		return previous;
-	}
+    @Override
+    AstNode factor4(AstNode previous){
+        return previous;
+    }
 	
 	
 	/*===========================================================
