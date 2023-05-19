@@ -22,6 +22,7 @@ import static de.dhbw.mh.slang.craft.Token.Type.POWER;
 import static de.dhbw.mh.slang.craft.Token.Type.RPAREN;
 import static de.dhbw.mh.slang.craft.Token.Type.TRUE;
 
+import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -370,28 +371,81 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 * exponentiation
 	 *===========================================================*/
 
+	// Initial Rules:
+	// Exponentiation: atomicExpression "**" exponentiation
+	// Exponentiation: eps
+
+	// There is left-recursion, as the atomicExpression circles over many rules again to Exponentiation
+	// This is noticeable in the select set
+
+	// Rules without left recursion
+	// Exponentiation: atomicExpression Exponent
+	// Exponent: "**" exponentiation
+	// Exponent: eps
+
 	@Override
 	public AstNode exponentiation( ){
-		// TODO Auto-generated method stub
-		return super.exponentiation( );
+		// Rule: Exponentiation: atomicExpression Exponent
+		// Select Set: LPAREN, IDENTIFIER, NUMERIC_LITERAL, EOF
+
+		if (LPAREN == LEXER.lookahead().TYPE
+				|| IDENTIFIER == LEXER.lookahead().TYPE
+				|| NUMERIC_LITERAL == LEXER.lookahead().TYPE
+				|| EOF == LEXER.lookahead().TYPE) {
+			return exponent(atomicExpression());
+		}
+
+		Set<Token.Type> acceptedTypes = setOf(LPAREN, IDENTIFIER, NUMERIC_LITERAL, EOF);
+		throw this.parsingException(acceptedTypes);
 	}
 
 	@Override
 	public AstNode exponent( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.exponent( previous );
+		// This function decides which of the both rules for "exponent" should be applied
+		// This is determined by the select set
+
+
+		switch (LEXER.lookahead().TYPE) {
+
+			// Rule: Exponent: "**" Exponentiation
+			// Select Set: POWER
+			case POWER:
+				return exponent1(previous);
+
+			// Rule: Exponent: eps
+			// Select Set: +,-,*,/ ..
+			case PLUS:
+			case MINUS:
+			case ASTERISK:
+			case DIVIDE:
+			case GREATER:
+			case LESS:
+			case GREATER_EQUAL:
+			case LESS_EQUAL:
+			case EQUAL:
+			case NOT_EQUAL:
+			case LAND:
+			case LOR:
+			case RPAREN:
+			case MODULO:
+			case EOF:
+				return exponent2(previous);
+
+			default:
+				Set<Token.Type> acceptedTypes = setOf(POWER, PLUS, MINUS, ASTERISK, DIVIDE, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL, EQUAL, NOT_EQUAL, LAND, LOR, RPAREN, MODULO, EOF);
+				throw this.parsingException(acceptedTypes);
+		}
 	}
 
 	@Override
 	public AstNode exponent1( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.exponent1( previous );
+		match(POWER);
+		return new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.POWER, exponentiation());
 	}
 
 	@Override
 	public AstNode exponent2( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.exponent2( previous );
+		return previous;
 	}
 
 	/*===========================================================
