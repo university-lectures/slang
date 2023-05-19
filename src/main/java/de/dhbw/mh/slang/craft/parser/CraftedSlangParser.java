@@ -34,6 +34,7 @@ import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.ast.AstUnaryOperation;
+import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
 import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
@@ -262,46 +263,72 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		// TODO Auto-generated method stub
 		return super.summand3( previous );
 	}
-	
-	/*===========================================================
-	 * multiplicativeExpression
-	 *===========================================================*/
-	
-	@Override
-	public AstNode multiplicativeExpression( ){
-		// TODO Auto-generated method stub
-		return super.multiplicativeExpression( );
-	}
-	
-	@Override
-	AstNode factor( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.factor( previous );
-	}
-	
-	@Override
-	AstNode factor1( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.factor1( previous );
-	}
-	
-	@Override
-	AstNode factor2( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.factor2( previous );
-	}
-	
-	@Override
-	AstNode factor3( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.factor3( previous );
-	}
-	
-	@Override
-	AstNode factor4( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.factor4( previous );
-	}
+
+    /*===========================================================
+     * multiplicativeExpression
+     *===========================================================*/
+
+    @Override
+    public AstNode multiplicativeExpression(){
+        switch (LEXER.lookahead().TYPE)
+        {
+            case PLUS:
+            case MINUS:
+            case LPAREN:
+            case IDENTIFIER:
+            case NUMERIC_LITERAL:
+                return factor(signedTerm());
+        }
+
+        return factor(signedTerm());
+    }
+
+    @Override
+    AstNode factor(AstNode previous){
+        switch (LEXER.lookahead().TYPE)
+        {
+            case ASTERISK:
+                return factor1(previous);
+            case DIVIDE:
+                return factor2(previous);
+            case MODULO:
+                return factor3(previous);
+        }
+
+        if (Selector.FACTOR4.contains(LEXER.lookahead().TYPE))
+            return factor4(previous);
+
+        throw parsingException(Selector.FACTOR);
+    }
+
+    @Override
+    AstNode factor1(AstNode previous){
+        match(ASTERISK);
+        AstNode next = signedTerm();
+        AstNode result = new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.MULTIPLY, next);
+        return factor(result);
+    }
+
+    @Override
+    AstNode factor2(AstNode previous){
+        match(DIVIDE);
+        AstNode next = signedTerm();
+        AstNode result = new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.DIVIDE, next);
+        return factor(result);
+    }
+
+    @Override
+    AstNode factor3(AstNode previous){
+        match(MODULO);
+        AstNode next = signedTerm();
+        AstNode result = new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.MODULO, next);
+        return factor(result);
+    }
+
+    @Override
+    AstNode factor4(AstNode previous){
+        return previous;
+    }
 	
 	
 	/*===========================================================
@@ -309,29 +336,37 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 *===========================================================*/
 	
 	@Override
-	public AstNode signedTerm( ){
-		// TODO Auto-generated method stub
-		return super.signedTerm( );
-	}
-	
-	@Override
-	AstNode signedTerm1( ){
-		// TODO Auto-generated method stub
-		return super.signedTerm1( );
-	}
-	
-	@Override
-	AstNode signedTerm2( ){
-		// TODO Auto-generated method stub
-		return super.signedTerm2( );
-	}
-	
-	@Override
-	AstNode signedTerm3( ){
-		// TODO Auto-generated method stub
-		return super.signedTerm3( );
-	}
-	
+    public AstNode signedTerm(){
+        if( PLUS == LEXER.lookahead().TYPE ){
+            return signedTerm1();
+        }
+        if( MINUS == LEXER.lookahead().TYPE ){
+            return signedTerm2();
+        }
+        if(Selector.SIGNED_TERM3.contains(LEXER.lookahead().TYPE)){
+            return signedTerm3();
+        }
+        throw parsingException(Selector.SIGNED_TERM);
+    }
+
+    @Override
+    AstNode signedTerm1(){
+        match(PLUS);
+        return new AstUnaryOperation(LEXER.lookahead().BEGIN, AstUnaryOperation.Operator.POSITIVE_SIGN, exponentiation());
+    }
+
+    @Override
+    AstNode signedTerm2(){
+        match(MINUS);
+        return new AstUnaryOperation(LEXER.lookahead().BEGIN, AstUnaryOperation.Operator.NEGATIVE_SIGN, exponentiation());
+
+    }
+
+    @Override
+    AstNode signedTerm3( ){
+        return exponentiation( );
+    }
+
 	/*===========================================================
 	 * exponentiation
 	 *===========================================================*/
@@ -348,7 +383,6 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	// Exponent: "**" exponentiation
 	// Exponent: eps
 
-
 	@Override
 	public AstNode exponentiation( ){
 		// Rule: Exponentiation: atomicExpression Exponent
@@ -364,7 +398,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		Set<Token.Type> acceptedTypes = setOf(LPAREN, IDENTIFIER, NUMERIC_LITERAL, EOF);
 		throw this.parsingException(acceptedTypes);
 	}
-	
+
 	@Override
 	public AstNode exponent( AstNode previous ){
 		// This function decides which of the both rules for "exponent" should be applied
@@ -402,44 +436,70 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 				throw this.parsingException(acceptedTypes);
 		}
 	}
-	
+
 	@Override
 	public AstNode exponent1( AstNode previous ){
 		match(POWER);
 		return new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.POWER, exponentiation());
 	}
-	
+
 	@Override
 	public AstNode exponent2( AstNode previous ){
 		return previous;
 	}
-	
+
 	/*===========================================================
 	 * atomicExpression
 	 *===========================================================*/
-	
+
 	@Override
 	public AstNode atomicExpression( ){
-		// TODO Auto-generated method stub
-		return super.atomicExpression( );
+		switch (this.LEXER.lookahead().TYPE) {
+			case LPAREN:
+				return this.atomicExpression1();
+			case IDENTIFIER:
+				return this.atomicExpression2();
+			case NUMERIC_LITERAL:
+			case TRUE:
+			case FALSE:
+				return this.atomicExpression3();
+			default:
+				throw parsingException(Selector.ATOMICS);
+		}
 	}
-	
+
 	@Override
 	public AstNode atomicExpression1( ){
-		// TODO Auto-generated method stub
-		return super.atomicExpression1( );
+		match(LPAREN);
+		AstNode node = this.conditionalExpression();
+		match(RPAREN);
+
+		return node;
 	}
-	
+
 	@Override
 	public AstNode atomicExpression2( ){
-		// TODO Auto-generated method stub
-		return super.atomicExpression2( );
+		if (this.LEXER.lookahead().TYPE != IDENTIFIER) {
+			throw this.parsingException(IDENTIFIER);
+		}
+
+		AstVariable variable = new AstVariable(this.LEXER.lookahead().LEXEME);
+
+		this.LEXER.advance();
+
+		return variable;
 	}
-	
+
 	@Override
 	public AstNode atomicExpression3( ){
-		// TODO Auto-generated method stub
-		return super.atomicExpression3( );
+		Set<Token.Type> acceptedTypes = setOf(NUMERIC_LITERAL, TRUE, FALSE);
+		if (!acceptedTypes.contains(this.LEXER.lookahead().TYPE)) {
+			throw this.parsingException(acceptedTypes);
+		}
+
+		AstNode literal = this.literal();
+		this.LEXER.advance();
+		return literal;
 	}
 	
 	/*===========================================================
