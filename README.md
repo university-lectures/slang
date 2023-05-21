@@ -38,4 +38,15 @@ git branch feature/issue-5/parse-additive-expressions
 git branch bugfix/no-ref/fix-selection-set-for-exponent
 ```
 
+### Commit Message Guideline
+
+Commit messages should start with a category of change. Please use one of the following labels:
+
+1. `feat`: for adding a new feature
+2. `fix`: for fixing a previous bug
+3. `refactor`: for changes that improve performance or affect convenience (e.g. readability)
+5. `chore`: for everything else (e.g. documentation, formatting, build infrastructure)
+
+The category should be followed by a colon `:` announcing the commit description.
+
 © Marco Haupt 2023
