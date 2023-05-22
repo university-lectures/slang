@@ -16,4 +16,9 @@ public class AstLiteral extends AstNode {
 		return VALUE.toString();
 	}
 
+	@Override
+	public <T> T accept( AstVisitor<T> visitor ){
+		return visitor.visit( this );
+	}
+
 }

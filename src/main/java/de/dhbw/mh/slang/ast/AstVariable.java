@@ -14,4 +14,9 @@ public class AstVariable extends AstNode {
 		return NAME;
 	}
 
+	@Override
+	public <T> T accept( AstVisitor<T> visitor ){
+		return visitor.visit( this );
+	}
+
 }
