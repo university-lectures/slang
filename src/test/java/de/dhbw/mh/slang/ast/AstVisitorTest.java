@@ -1,4 +1,4 @@
-package de.dhbw.mh.slang.codegen;
+package de.dhbw.mh.slang.ast;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
