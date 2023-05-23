@@ -137,8 +137,8 @@ public class CraftedSlangParser extends AbstractParserLL1 {
             LEXER.advance();
         }
 
-		AstNode test = new AstBinaryOperation(this.LEXER.lookahead().BEGIN,previous, Operator.LOGICAL_OR, conditionalAndExpression());
-        return this.disjunction(test);
+		AstNode abo = new AstBinaryOperation(this.LEXER.lookahead().BEGIN,previous, Operator.LOGICAL_OR, conditionalAndExpression());
+        return this.disjunction(abo);
 	}
 
 	@Override
