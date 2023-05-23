@@ -235,7 +235,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	@Override
 	public AstNode additiveExpression( ){
 		if( Selector.SUMMAND.contains(LEXER.lookahead().TYPE) ){
-			AstNode previous = atomicExpression();
+			AstNode previous = multiplicativeExpression();
 			return summand( previous );
 		}
 		throw parsingException( Selector.SUMMAND );
@@ -261,8 +261,8 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		if (PLUS == LEXER.lookahead().TYPE) {
 			CodeLocation location = LEXER.lookahead().BEGIN;
 			LEXER.advance();
-			AstNode next = additiveExpression();
-			return new AstBinaryOperation( location, previous, Operator.ADD, next);
+			AstNode next = multiplicativeExpression();
+			return summand(new AstBinaryOperation( location, previous, Operator.ADD, next));
 		}
 		throw parsingException( Selector.SUMMAND );
 	}
@@ -272,15 +272,18 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		if (MINUS == LEXER.lookahead().TYPE) {
 			CodeLocation location = LEXER.lookahead().BEGIN;
 			LEXER.advance();
-			AstNode next = additiveExpression();
-			return new AstBinaryOperation( location, previous, Operator.SUBTRACT, next );
+			AstNode next = multiplicativeExpression();
+			return summand(new AstBinaryOperation( location, previous, Operator.SUBTRACT, next ));
 		}
 		throw parsingException( Selector.SUMMAND );
 	}
 	
 	@Override
 	AstNode summand3( AstNode previous ){
-		return previous;
+		if( Selector.SUMMAND3.contains(LEXER.lookahead().TYPE) ){
+			return previous;
+		}
+		throw parsingException( Selector.SUMMAND3 );
 	}
 	
 	/*===========================================================
