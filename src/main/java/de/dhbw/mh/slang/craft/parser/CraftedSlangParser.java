@@ -161,10 +161,12 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	AstNode conjunction1(AstNode previous) {
 		if (LEXER.lookahead().TYPE != LAND) {
 			throw this.parsingException(LAND);
+		}else{
+			LEXER.advance();
 		}
-
-		return new AstBinaryOperation(this.LEXER.lookahead().BEGIN, previous, Operator.LOGICAL_AND,
+	AstBinaryOberation abo = new AstBinaryOperation(this.LEXER.lookahead().BEGIN, previous, Operator.LOGICAL_AND,
 				equation());		
+		return conjunction(abo);
 	}
 
 	@Override
