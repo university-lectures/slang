@@ -25,14 +25,19 @@ import static de.dhbw.mh.slang.craft.Token.Type.TRUE;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.management.RuntimeErrorException;
+
 import de.dhbw.mh.slang.Bool;
+import de.dhbw.mh.slang.I32;
 import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
+import de.dhbw.mh.slang.ast.AstBinaryOperation.Operator;
 import de.dhbw.mh.slang.ast.AstUnaryOperation;
 import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.craft.CodeLocation;
@@ -41,25 +46,25 @@ import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
 import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 
 public class CraftedSlangParser extends AbstractParserLL1 {
-	
+
 	private static final String PARSER_ERROR_MESSAGE = "mismatched input '%s' at %s-%s, expected %s";
-	
+
 	public CraftedSlangParser( CraftedSlangLexer lexer ){
 		super( lexer );
 	}
-	
-	
+
+
 	private static Set<Token.Type> setOf( Token.Type... types ){
 		return Stream.of( types ).collect( Collectors.toCollection(HashSet::new) );
 	}
-	
+
 	private static Set<Token.Type> setOf( Set<Token.Type> base, Token.Type... types ){
 		Set<Token.Type> result;
 		result = Stream.of( types ).collect( Collectors.toCollection(HashSet::new) );
 		result.addAll( base );
 		return result;
 	}
-	
+
 	private static final class Selector {
 		private static final Set<Token.Type> DISJUNCTION2   = setOf( EOF, RPAREN );
 		private static final Set<Token.Type> DISJUNCTION    = setOf( DISJUNCTION2, LOR );
@@ -81,79 +86,100 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		private static final Set<Token.Type> LITERAL1       = setOf( TRUE, FALSE );
 		private static final Set<Token.Type> LITERAL        = setOf( LITERAL1, NUMERIC_LITERAL );
 	}
-	
-	
-	
+
+
+
 	/*===========================================================
 	 * conditionalExpression
 	 *===========================================================*/
-	
+
 	@Override
 	public AstNode conditionalExpression( ){
 		// TODO Auto-generated method stub
 		return super.conditionalExpression( );
 	}
-	
+
 	/*===========================================================
 	 * conditionalOrExpression
 	 *===========================================================*/
-	
+
 	@Override
 	public AstNode conditionalOrExpression( ){
-		// TODO Auto-generated method stub
-		return super.conditionalOrExpression( );
+		switch(LEXER.lookahead().TYPE) {
+			case PLUS:
+			case MINUS:
+			case LPAREN:
+			case IDENTIFIER:
+			case NUMERIC_LITERAL:
+				return this.disjunction(conditionalAndExpression());
+			default:
+				Set<Token.Type> acceptedTypes = setOf(PLUS, MINUS, LPAREN, IDENTIFIER, NUMERIC_LITERAL);
+				throw this.parsingException(acceptedTypes);
+		}
 	}
-	
+
 	@Override
 	AstNode disjunction( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.disjunction( previous );
+		switch(LEXER.lookahead().TYPE) {
+			case LOR:
+				return this.disjunction1(previous);
+			case EOF:
+			case RPAREN:
+				return this.disjunction2(previous);
+			default:
+				throw this.parsingException(Selector.DISJUNCTION);
+		}
 	}
-	
+
 	@Override
 	AstNode disjunction1( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.disjunction1( previous );
+		if(LEXER.lookahead().TYPE != LOR) {
+			throw this.parsingException(LOR);
+		} else {
+            LEXER.advance();
+        }
+
+		AstNode abo = new AstBinaryOperation(this.LEXER.lookahead().BEGIN,previous, Operator.LOGICAL_OR, conditionalAndExpression());
+        return this.disjunction(abo);
 	}
-	
+
 	@Override
 	AstNode disjunction2( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.disjunction2( previous );
+		return previous;
 	}
-	
+
 	/*===========================================================
 	 * conditionalAndExpression
 	 *===========================================================*/
-	
+
 	@Override
 	public AstNode conditionalAndExpression( ){
 		// TODO Auto-generated method stub
 		return super.conditionalAndExpression( );
 	}
-	
+
 	@Override
 	AstNode conjunction( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.conjunction( previous );
 	}
-	
+
 	@Override
 	AstNode conjunction1( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.conjunction1( previous );
 	}
-	
+
 	@Override
 	AstNode conjunction2( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.conjunction2(previous);
 	}
-	
+
 	/*===========================================================
 	 * equation
 	 *===========================================================*/
-	
+
 	@Override
 	public AstNode equation( ){
 		if (PLUS == LEXER.lookahead().TYPE ||
@@ -166,7 +192,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 		return equalities(relationalExpression());
 	}
-	
+
 	@Override
 	AstNode equalities( AstNode previous ){
 		if ( EQUAL == LEXER.lookahead().TYPE ){
@@ -181,7 +207,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 		throw parsingException( Selector.EQUALITIES );
 	}
-	
+
 	@Override
 	AstNode equalities1( AstNode previous ){
 		match( Token.Type.EQUAL );
@@ -190,7 +216,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 				previous, AstBinaryOperation.Operator.COMPARE_EQUAL, next );
 		return equalities( result );
 	}
-	
+
 	@Override
 	AstNode equalities2( AstNode previous ){
 		match( Token.Type.NOT_EQUAL );
@@ -199,86 +225,86 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 				previous, AstBinaryOperation.Operator.COMPARE_UNEQUAL, next );
 		return equalities( result );
 	}
-	
+
 	@Override
 	AstNode equalities3( AstNode previous ){
 		return previous;
 	}
-	
+
 	/*===========================================================
 	 * relationalExpression
 	 *===========================================================*/
-	
+
 	@Override
 	public AstNode relationalExpression( ){
 		// TODO Auto-generated method stub
 		return super.relationalExpression( );
 	}
-	
+
 	@Override
 	public AstNode relations( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.relations( previous );
 	}
-	
+
 	@Override
 	AstNode relations1( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.relations1( previous );
 	}
-	
+
 	@Override
 	AstNode relations2( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.relations2( previous );
 	}
-	
+
 	@Override
 	AstNode relations3( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.relations3( previous );
 	}
-	
+
 	@Override
 	AstNode relations4( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.relations4( previous );
 	}
-	
+
 	@Override
 	AstNode relations5( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.relations5( previous );
 	}
-	
+
 	/*===========================================================
 	 * additiveExpression
 	 *===========================================================*/
-	
+
 	@Override
 	public AstNode additiveExpression( ){
 		// TODO Auto-generated method stub
 		return super.additiveExpression( );
 	}
-	
+
 	@Override
 	public AstNode summand( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.summand( previous );
 	}
-	
+
 	@Override
 	AstNode summand1( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.summand1( previous );
 	}
-	
+
 	@Override
 	AstNode summand2( AstNode previous ){
 		// TODO Auto-generated method stub
 		return super.summand2( previous );
 	}
-	
+
 	@Override
 	AstNode summand3( AstNode previous ){
 		// TODO Auto-generated method stub
@@ -355,8 +381,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	/*===========================================================
 	 * signedExpression
 	 *===========================================================*/
-	
-	@Override
+
     public AstNode signedTerm(){
         if( PLUS == LEXER.lookahead().TYPE ){
             return signedTerm1();
@@ -522,11 +547,11 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		this.LEXER.advance();
 		return literal;
 	}
-	
+
 	/*===========================================================
 	 * literal
 	 *===========================================================*/
-	
+
 	@Override
 	public AstNode literal( ){
 		if( Selector.LITERAL1.contains(LEXER.lookahead().TYPE) ){
@@ -537,7 +562,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		}
 		throw parsingException( Selector.LITERAL );
 	}
-	
+
 	@Override
 	AstNode literal1( ){
 		Token token = LEXER.lookahead();
@@ -549,7 +574,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		}
 		throw parsingException( Selector.LITERAL1 );
 	}
-	
+
 	@Override
 	AstNode literal2( ){
 		Token token = LEXER.lookahead();
@@ -557,18 +582,18 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		NumericValue value = NumericalEvaluator.parse( token.LEXEME );
 		return new AstLiteral( value );
 	}
-	
+
 	/*===========================================================
 	 * helpers
 	 *===========================================================*/
-	
+
 	public void match( Token.Type expectedType ){
 		if( LEXER.lookahead().TYPE != expectedType ){
 			throw parsingException( expectedType );
 		}
 		LEXER.advance();
 	}
-	
+
 	private RuntimeException parsingException( Set<Token.Type> selectionSet ){
 		CodeLocation begin = LEXER.lookahead().BEGIN;
 		CodeLocation end = LEXER.lookahead().END;
@@ -576,7 +601,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 				LEXER.lookahead().LEXEME, begin, end, selectionSet );
 		return new RuntimeException( message );
 	}
-	
+
 	private RuntimeException parsingException( Token.Type selectionSet ){
 		CodeLocation begin = LEXER.lookahead().BEGIN;
 		CodeLocation end = LEXER.lookahead().END;
