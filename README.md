@@ -20,4 +20,33 @@ This repository is part of a lecture series on compiler construction at the [Bad
 
 The project is kept small on purpose. It does not intend to offer as many features as possible or to be particularly powerful. Please consider this before creating a pull request. Functional enhancements are likely to be rejected. Changes, however, that serve usability, clarity, structure or better understanding are always welcome.
 
+### Branch Naming Convention
+
+Temporary branch names should consist of three parts separated by `/`.
+
+1. The first part is used for categorization and can take one of the following identifiers:
+   * `feature` for branches that add, refactor or remove a specific feature
+   * `bugfix` for branches that fix a bug
+   * `experiment` for branches that are used to collaborate on experiments
+2. The second part references the issue/ticket you are currently working on. If there's no reference, just add `no-ref`.
+3. The third part describes the purpose of this particular branch. This description should as short and meaningful as possible.
+
+Please separate words with a dash `-` (known as "kebap case") throughout the branch name. Here are a few examples:
+
+```zsh
+git branch feature/issue-5/parse-additive-expressions
+git branch bugfix/no-ref/fix-selection-set-for-exponent
+```
+
+### Commit Message Guideline
+
+Commit messages should start with a category of change. Please use one of the following labels:
+
+1. `feat`: for adding a new feature
+2. `fix`: for fixing a previous bug
+3. `refactor`: for changes that improve performance or affect convenience (e.g. readability)
+5. `chore`: for everything else (e.g. documentation, formatting, build infrastructure)
+
+The category should be followed by a colon `:` announcing the commit description.
+
 © Marco Haupt 2023
