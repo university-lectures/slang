@@ -237,44 +237,82 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 	@Override
 	public AstNode relationalExpression( ){
-		// TODO Auto-generated method stub
-		return super.relationalExpression( );
+		Token.Type type = LEXER.lookahead().TYPE;
+		String lexeme = LEXER.lookahead().LEXEME;
+
+		if(
+				NUMERIC_LITERAL == type
+				|| IDENTIFIER == type
+				|| PLUS == type
+				|| MINUS == type
+				|| LPAREN == type)
+		{
+			AstNode previous = additiveExpression();
+			return relations(previous);
+		} else {
+			throw new RuntimeException();
+		}
 	}
 
 	@Override
 	public AstNode relations( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.relations( previous );
+		Token.Type type = LEXER.lookahead().TYPE;
+		switch (type) {
+			case LESS:
+				return relations1(previous);
+			case GREATER:
+				return  relations2(previous);
+			case LESS_EQUAL:
+				return relations3(previous);
+			case GREATER_EQUAL:
+				return relations4(previous);
+			case EOF:
+			case RPAREN:
+			case EQUAL:
+			case NOT_EQUAL:
+			case LAND:
+			case LOR:
+				return relations5(previous);
+			default: throw parsingException( Selector.RELATIONS );
+		}
 	}
 
 	@Override
 	AstNode relations1( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.relations1( previous );
+		match( Token.Type.LESS );
+		AstNode diese = additiveExpression();
+		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.LESS_THAN, diese);
+		return relations(middleAst);
+
 	}
 
 	@Override
 	AstNode relations2( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.relations2( previous );
+		match( Token.Type.GREATER );
+		AstNode diese = additiveExpression();
+		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.GREATER_THAN, diese);
+		return relations(middleAst);
 	}
 
 	@Override
 	AstNode relations3( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.relations3( previous );
+		match( Token.Type.LESS_EQUAL );
+		AstNode diese = additiveExpression();
+		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.LESS_OR_EQUAL, diese);
+		return relations(middleAst);
 	}
 
 	@Override
 	AstNode relations4( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.relations4( previous );
+		match( Token.Type.GREATER_EQUAL );
+		AstNode diese = additiveExpression();
+		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.GREATER_OR_EQUAL, diese);
+		return relations(middleAst);
 	}
 
 	@Override
 	AstNode relations5( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.relations5( previous );
+		return previous;
 	}
 
 	/*===========================================================
