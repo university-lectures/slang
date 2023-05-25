@@ -35,13 +35,14 @@ import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.I32;
 import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.ast.AstBinaryOperation;
+import de.dhbw.mh.slang.ast.AstBinaryOperation.Operator;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
-import de.dhbw.mh.slang.ast.AstBinaryOperation.Operator;
 import de.dhbw.mh.slang.ast.AstUnaryOperation;
 import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
+import de.dhbw.mh.slang.craft.Token.Type;
 import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
 import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 
@@ -321,32 +322,57 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 	@Override
 	public AstNode additiveExpression( ){
-		// TODO Auto-generated method stub
-		return super.additiveExpression( );
+		Set<Type> selectionSet = setOf( PLUS, MINUS, LPAREN, IDENTIFIER, NUMERIC_LITERAL );
+		if( selectionSet.contains(LEXER.lookahead().TYPE) ){
+			AstNode previous = multiplicativeExpression();
+			return summand( previous );
+		}
+		throw parsingException( Selector.SUMMAND );
 	}
 
 	@Override
 	public AstNode summand( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.summand( previous );
+		Token token = LEXER.lookahead();
+		if( Selector.SUMMAND3.contains(token.TYPE) ){
+			return summand3( previous );
+		}
+		if( PLUS == token.TYPE ){
+			return summand1( previous );
+		}
+		if( MINUS == token.TYPE ){
+			return summand2( previous );
+		}
+		throw parsingException( Selector.SUMMAND );
 	}
 
 	@Override
 	AstNode summand1( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.summand1( previous );
+		if (PLUS == LEXER.lookahead().TYPE) {
+			CodeLocation location = LEXER.lookahead().BEGIN;
+			LEXER.advance();
+			AstNode next = multiplicativeExpression();
+			return summand(new AstBinaryOperation( location, previous, Operator.ADD, next));
+		}
+		throw parsingException( Selector.SUMMAND );
 	}
 
 	@Override
 	AstNode summand2( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.summand2( previous );
+		if (MINUS == LEXER.lookahead().TYPE) {
+			CodeLocation location = LEXER.lookahead().BEGIN;
+			LEXER.advance();
+			AstNode next = multiplicativeExpression();
+			return summand(new AstBinaryOperation( location, previous, Operator.SUBTRACT, next ));
+		}
+		throw parsingException( Selector.SUMMAND );
 	}
 
 	@Override
 	AstNode summand3( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.summand3( previous );
+		if( Selector.SUMMAND3.contains(LEXER.lookahead().TYPE) ){
+			return previous;
+		}
+		throw parsingException( Selector.SUMMAND3 );
 	}
 
     /*===========================================================
