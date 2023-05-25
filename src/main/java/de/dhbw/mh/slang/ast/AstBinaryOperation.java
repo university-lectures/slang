@@ -37,4 +37,9 @@ public class AstBinaryOperation extends AstNode {
 		return String.format( "(%s%s%s)", FIRST, OPERATOR, SECOND );
 	}
 	
+	@Override
+	public <T> T accept( AstVisitor<T> visitor ){
+		return visitor.visit( this );
+	}
+
 }
