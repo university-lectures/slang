@@ -72,7 +72,7 @@ class CraftedSlangParserCondAndTest extends CraftedSlangParserUtils {
 	
 	@Test
 	void conditionalAnd_passesResultTo_conjunction( ){
-		String input = "";
+		String input = "false";
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( returnDummyAst ).when( spy ).equation( );
 		Mockito.doAnswer( returnInputParameter ).when( spy ).conjunction( any() );

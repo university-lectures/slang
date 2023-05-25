@@ -144,17 +144,12 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	AstNode conjunction(AstNode previous) {
 		// Reject anything except LAND
 		if (LEXER.lookahead().TYPE == LAND) {
-			LEXER.advance();
-			// && one literal or two ??
 			return this.conjunction1(previous);
 		} else if (LEXER.lookahead().TYPE == EOF || LEXER.lookahead().TYPE == RPAREN || LEXER.lookahead().TYPE == LOR) {
 			return conjunction2(previous);
 		} else {
 			throw this.parsingException(Selector.CONJUNCTION);
 		}
-		// AstNode res=equation();
-		// return conjunction1(res);
-
 	}
 
 	@Override
@@ -164,7 +159,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		}else{
 			LEXER.advance();
 		}
-	AstBinaryOberation abo = new AstBinaryOperation(this.LEXER.lookahead().BEGIN, previous, Operator.LOGICAL_AND,
+		AstBinaryOperation abo = new AstBinaryOperation(this.LEXER.lookahead().BEGIN, previous, Operator.LOGICAL_AND,
 				equation());		
 		return conjunction(abo);
 	}
