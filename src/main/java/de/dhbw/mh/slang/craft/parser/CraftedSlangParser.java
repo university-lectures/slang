@@ -30,11 +30,12 @@ import java.util.stream.Stream;
 import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.ast.AstBinaryOperation;
+import de.dhbw.mh.slang.ast.AstBinaryOperation.Operator;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
-import de.dhbw.mh.slang.ast.AstBinaryOperation.Operator;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
+import de.dhbw.mh.slang.craft.Token.Type;
 import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
 import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 
@@ -234,7 +235,8 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	@Override
 	public AstNode additiveExpression( ){
-		if( Selector.SUMMAND.contains(LEXER.lookahead().TYPE) ){
+		Set<Type> selectionSet = setOf( PLUS, MINUS, LPAREN, IDENTIFIER, NUMERIC_LITERAL );
+		if( selectionSet.contains(LEXER.lookahead().TYPE) ){
 			AstNode previous = multiplicativeExpression();
 			return summand( previous );
 		}
