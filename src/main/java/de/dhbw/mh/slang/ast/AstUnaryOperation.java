@@ -33,4 +33,9 @@ public class AstUnaryOperation extends AstNode {
 		return String.format( "%s%s", OPERATOR, BASE );
 	}
 
+	@Override
+	public <T> T accept( AstVisitor<T> visitor ){
+		return visitor.visit( this );
+	}
+
 }
