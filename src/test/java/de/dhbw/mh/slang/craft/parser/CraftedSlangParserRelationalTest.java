@@ -86,7 +86,7 @@ class CraftedSlangParserRelationalTest extends CraftedSlangParserUtils {
 	
 	@Test
 	void relationalExpr_passesResultTo_relations( ){
-		String input = "";
+		String input = "+";
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( returnDummyAst ).when( spy ).additiveExpression( );
 		Mockito.doAnswer( returnInputParameter ).when( spy ).relations( any() );
