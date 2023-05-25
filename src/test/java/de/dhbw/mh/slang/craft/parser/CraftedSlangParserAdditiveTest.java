@@ -85,7 +85,7 @@ class CraftedSlangParserAdditiveTest extends CraftedSlangParserUtils {
 	
 	@Test
 	void additiveExpr_passesResultTo_summands( ){
-		String input = "";
+		String input = "abc";
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( returnDummyAst ).when( spy ).multiplicativeExpression( );
 		Mockito.doAnswer( returnInputParameter ).when( spy ).summand( any() );
@@ -210,7 +210,7 @@ class CraftedSlangParserAdditiveTest extends CraftedSlangParserUtils {
 	@Test
 	void summand3_returns_input_parameter( ){
 		AstNode previousSubtree = DUMMY_LITERAL1;
-		String input = "the input is not relevant for this function";
+		String input = "&&";
 		initializeParser( input );
 		
 		AstNode result = parser.summand3( previousSubtree );
