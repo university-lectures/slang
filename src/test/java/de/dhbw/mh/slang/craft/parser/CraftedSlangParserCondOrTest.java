@@ -71,7 +71,7 @@ class CraftedSlangParserCondOrTest extends CraftedSlangParserUtils {
 	
 	@Test
 	void conditionalOr_passesResultTo_disjunction( ){
-		String input = "";
+		String input = "abc";
 		AbstractParserLL1 spy = createSpy( input );
 		Mockito.doAnswer( returnDummyAst ).when( spy ).conditionalAndExpression( );
 		Mockito.doAnswer( returnInputParameter ).when( spy ).disjunction( any() );
