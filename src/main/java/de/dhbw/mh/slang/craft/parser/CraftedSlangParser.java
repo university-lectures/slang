@@ -61,8 +61,8 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 	private static Set<Token.Type> setOf( Set<Token.Type> base, Token.Type... types ){
 		Set<Token.Type> result;
-		result = Stream.of( types ).collect( Collectors.toCollection(HashSet::new) );
-		result.addAll( base );
+		result = Stream.of(types).collect(Collectors.toCollection(HashSet::new));
+		result.addAll(base);
 		return result;
 	}
 
@@ -95,11 +95,11 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 *===========================================================*/
 
 	@Override
-	public AstNode conditionalExpression( ){
+	public AstNode conditionalExpression() {
 		// TODO Auto-generated method stub
-		return super.conditionalExpression( );
+		return super.conditionalExpression();
 	}
-
+  
 	/*===========================================================
 	 * conditionalOrExpression
 	 *===========================================================*/
@@ -154,27 +154,45 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 *===========================================================*/
 
 	@Override
-	public AstNode conditionalAndExpression( ){
-		// TODO Auto-generated method stub
-		return super.conditionalAndExpression( );
+	public AstNode conditionalAndExpression() {
+		if (PLUS == LEXER.lookahead().TYPE || MINUS == LEXER.lookahead().TYPE || LPAREN == LEXER.lookahead().TYPE
+				|| IDENTIFIER == LEXER.lookahead().TYPE || Selector.LITERAL.contains(LEXER.lookahead().TYPE)) {
+			AstNode res = equation();
+			return conjunction(res);
+
+		}
+
+		throw parsingException(Selector.LITERAL);
+
 	}
 
 	@Override
-	AstNode conjunction( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.conjunction( previous );
+	AstNode conjunction(AstNode previous) {
+		// Reject anything except LAND
+		if (LEXER.lookahead().TYPE == LAND) {
+			return this.conjunction1(previous);
+		} else if (LEXER.lookahead().TYPE == EOF || LEXER.lookahead().TYPE == RPAREN || LEXER.lookahead().TYPE == LOR) {
+			return conjunction2(previous);
+		} else {
+			throw this.parsingException(Selector.CONJUNCTION);
+		}
 	}
 
 	@Override
-	AstNode conjunction1( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.conjunction1( previous );
+	AstNode conjunction1(AstNode previous) {
+		if (LEXER.lookahead().TYPE != LAND) {
+			throw this.parsingException(LAND);
+		}else{
+			LEXER.advance();
+		}
+		AstBinaryOperation abo = new AstBinaryOperation(this.LEXER.lookahead().BEGIN, previous, Operator.LOGICAL_AND,
+				equation());		
+		return conjunction(abo);
 	}
 
 	@Override
-	AstNode conjunction2( AstNode previous ){
-		// TODO Auto-generated method stub
-		return super.conjunction2(previous);
+	AstNode conjunction2(AstNode previous) {
+		return previous;
 	}
 
 	/*===========================================================
@@ -617,30 +635,30 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 *===========================================================*/
 
 	@Override
-	public AstNode literal( ){
-		if( Selector.LITERAL1.contains(LEXER.lookahead().TYPE) ){
-			return literal1( );
+	public AstNode literal() {
+		if (Selector.LITERAL1.contains(LEXER.lookahead().TYPE)) {
+			return literal1();
 		}
-		if( NUMERIC_LITERAL == LEXER.lookahead().TYPE ){
-			return literal2( );
+		if (NUMERIC_LITERAL == LEXER.lookahead().TYPE) {
+			return literal2();
 		}
-		throw parsingException( Selector.LITERAL );
+		throw parsingException(Selector.LITERAL);
 	}
 
 	@Override
-	AstNode literal1( ){
+	AstNode literal1() {
 		Token token = LEXER.lookahead();
-		if( TRUE == token.TYPE ){
-			return new AstLiteral( new Bool(true) );
+		if (TRUE == token.TYPE) {
+			return new AstLiteral(new Bool(true));
 		}
-		if( FALSE == token.TYPE ){
-			return new AstLiteral( new Bool(false) );
+		if (FALSE == token.TYPE) {
+			return new AstLiteral(new Bool(false));
 		}
-		throw parsingException( Selector.LITERAL1 );
+		throw parsingException(Selector.LITERAL1);
 	}
 
 	@Override
-	AstNode literal2( ){
+	AstNode literal2() {
 		Token token = LEXER.lookahead();
 		match( Token.Type.NUMERIC_LITERAL );
 		NumericValue value = NumericalEvaluator.parse( token.LEXEME );
@@ -661,17 +679,16 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	private RuntimeException parsingException( Set<Token.Type> selectionSet ){
 		CodeLocation begin = LEXER.lookahead().BEGIN;
 		CodeLocation end = LEXER.lookahead().END;
-		String message = String.format( PARSER_ERROR_MESSAGE,
-				LEXER.lookahead().LEXEME, begin, end, selectionSet );
-		return new RuntimeException( message );
+		String message = String.format(PARSER_ERROR_MESSAGE, LEXER.lookahead().LEXEME, begin, end, selectionSet);
+		return new RuntimeException(message);
 	}
 
 	private RuntimeException parsingException( Token.Type selectionSet ){
 		CodeLocation begin = LEXER.lookahead().BEGIN;
 		CodeLocation end = LEXER.lookahead().END;
-		String message = String.format( PARSER_ERROR_MESSAGE,
-				LEXER.lookahead().LEXEME, begin, end, "{"+selectionSet+"}" );
-		return new RuntimeException( message );
+		String message = String.format(PARSER_ERROR_MESSAGE, LEXER.lookahead().LEXEME, begin, end,
+				"{" + selectionSet + "}");
+		return new RuntimeException(message);
 	}
 
 }
