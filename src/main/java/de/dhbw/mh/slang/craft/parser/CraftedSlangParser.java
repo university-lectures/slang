@@ -32,7 +32,6 @@ import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
-import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.craft.CodeLocation;
 import de.dhbw.mh.slang.craft.Token;
 import de.dhbw.mh.slang.craft.lexer.CraftedSlangLexer;
@@ -201,7 +200,6 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 			AstNode previous = additiveExpression();
 			return relations(previous);
 		} else {
-			System.out.println(type);
 			throw new RuntimeException();
 		}
 	}
@@ -225,13 +223,13 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 			case LAND:
 			case LOR:
 				return relations5(previous);
-			default: throw new RuntimeException("BOOM");
+			default: throw parsingException( Selector.RELATIONS );
 		}
 	}
 	
 	@Override
 	AstNode relations1( AstNode previous ){
-		LEXER.advance();
+		match( Token.Type.LESS );
 		AstNode diese = additiveExpression();
 		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.LESS_THAN, diese);
 		return relations(middleAst);
@@ -240,7 +238,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	@Override
 	AstNode relations2( AstNode previous ){
-		LEXER.advance();
+		match( Token.Type.GREATER );
 		AstNode diese = additiveExpression();
 		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.GREATER_THAN, diese);
 		return relations(middleAst);
@@ -248,7 +246,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	@Override
 	AstNode relations3( AstNode previous ){
-		LEXER.advance();
+		match( Token.Type.LESS_EQUAL );
 		AstNode diese = additiveExpression();
 		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.LESS_OR_EQUAL, diese);
 		return relations(middleAst);
@@ -256,7 +254,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	
 	@Override
 	AstNode relations4( AstNode previous ){
-		LEXER.advance();
+		match( Token.Type.GREATER_EQUAL );
 		AstNode diese = additiveExpression();
 		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.GREATER_OR_EQUAL, diese);
 		return relations(middleAst);
