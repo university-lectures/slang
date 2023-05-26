@@ -22,9 +22,9 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 	@Override
 	public String visit( AstLiteral literal ){
 		if( literal.VALUE instanceof I8 ){
-			throw new RuntimeException( "not yet implemented" );
+			return String.format("sipush %s%n", ((I8) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I16 ){
-			throw new RuntimeException( "not yet implemented" );
+			return String.format("sipush %s%n", ((I16) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I32 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof I64 ){
@@ -59,12 +59,25 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 
 	@Override
 	public String visitPost( AstBinaryOperation node, String lhs, String rhs ){
+		String prefix= "";
+		switch (node.getDatatype()) {
+			case BOOL: prefix = "i";break;
+			case I8: prefix = "i";break;
+			case I16: prefix = "i";break;
+			case I32: prefix = "i";break;
+			case I64: prefix = "l";break;
+			case F32: prefix = "f";break;
+			case F64: prefix = "d";break;		
+			default:
+				prefix = "i";
+				break;
+		}
 		switch( node.OPERATOR ){
 			case ADD:{
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case SUBTRACT:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("LHS%nRHS%n" + prefix + "sub%n");
 			}
 			case MULTIPLY:{
 				throw new RuntimeException( "not yet implemented" );
@@ -85,13 +98,14 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case COMPARE_UNEQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("LHS%nRHS%nif_icmpeq #0_eq%niconst_1%ngoto #0_end%n#0_eq:%niconst_0%n#0_end:%n");
 			}
 			case LESS_THAN:{
-				throw new RuntimeException( "not yet implemented" );
+				// return String.format("LHS%nRHS%nif_icmplt #0_lt%niconst_0%ngoto #0_end%n#0_lt:%niconst_1%n#0_end:%n");
 			}
 			case GREATER_OR_EQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				// return String.format("LHS%nRHS%nif_icmplt #0_lt%niconst_1%ngoto #0_end%n#0_lt:%niconst_0%n#0_end:%n"); 
+				
 			}
 			case GREATER_THAN:{
 				throw new RuntimeException( "not yet implemented" );
