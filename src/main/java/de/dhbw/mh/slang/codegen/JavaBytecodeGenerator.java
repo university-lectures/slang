@@ -91,7 +91,18 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case GREATER_OR_EQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				String result = "";
+				result += "LHS" + System.lineSeparator();
+				result += "RHS" + System.lineSeparator();
+				result += "ifeq #true" + System.lineSeparator();
+				result += "isub" + System.lineSeparator();
+				result += "if_icmpgt #true" + System.lineSeparator();  //wir interpretieren das als rhs - lhs
+				result += "iconst_0" + System.lineSeparator();
+				result += "goto #end" + System.lineSeparator();
+				result += "true:" + System.lineSeparator();
+				result += "iconst_1" + System.lineSeparator();
+				result += "#end" + System.lineSeparator();
+				return result;
 			}
 			case GREATER_THAN:{
 				throw new RuntimeException( "not yet implemented" );
