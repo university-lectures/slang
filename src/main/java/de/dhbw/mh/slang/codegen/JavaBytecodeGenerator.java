@@ -34,7 +34,10 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}else if( literal.VALUE instanceof F64 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof Bool ){
-			throw new RuntimeException( "not yet implemented" );
+			if(((Bool) literal.VALUE).VALUE){
+				return String.format("iconst_1%n");
+			}
+			return String.format("iconst_0%n");
 		}
 		throw new RuntimeException( "unhandled branch" );
 	}
