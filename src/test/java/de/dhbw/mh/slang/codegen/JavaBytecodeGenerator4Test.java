@@ -11,7 +11,7 @@ import de.dhbw.mh.slang.Datatype;
 import de.dhbw.mh.slang.Value;
 import de.dhbw.mh.slang.ast.AstNode;
 
-@Disabled
+
 class JavaBytecodeGenerator4Test extends JavaBytecodeGeneratorTest {
 	
 	private static final int GROUP_ID = 4;
