@@ -32,7 +32,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}else if( literal.VALUE instanceof I32 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof I64 ){
-			throw new RuntimeException( "not yet implemented" );
+			return String.format( "ldc2_w %s%n",  ((I64) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof F32 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof F64 ){
@@ -77,7 +77,19 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case DIVIDE:{
-				throw new RuntimeException( "not yet implemented" );
+				String pattern = "%s%s%s%n";
+				switch ( node.getDatatype() )
+				{
+					case I64:
+						return String.format( pattern, lhs, rhs, "ldiv" );
+					case F64:
+						return String.format( pattern, lhs, rhs, "ddiv" );
+					case F32:
+						return String.format( pattern, lhs, rhs, "fdiv" );
+					default:
+						return String.format( pattern, lhs, rhs, "idiv" );
+				}
+
 			}
 			case MODULO:{
 				throw new RuntimeException( "not yet implemented" );
@@ -114,7 +126,13 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case GREATER_THAN:{
-				throw new RuntimeException( "not yet implemented" );
+				String string = String.format( "%s%s%s%n", lhs, rhs, "if_icmple #0_le" );
+				string += String.format( "%s%n", "iconst_1" );
+				string += String.format( "%s%n", "goto #0_end" );
+				string += String.format( "%s%n", "#0_le:" );
+				string += String.format( "%s%n", "iconst_0" );
+				string += String.format( "%s%n", "#0_end:" );
+				return string;
 			}
 			case LESS_OR_EQUAL:{
 				throw new RuntimeException( "not yet implemented" );
