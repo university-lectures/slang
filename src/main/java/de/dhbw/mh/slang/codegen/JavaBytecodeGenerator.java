@@ -12,20 +12,20 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 	@Override
 	public String visit( AstLiteral literal ){
 		if( literal.VALUE instanceof I8 ){
-			return "bipush " + ((I8) literal.VALUE).VALUE + "\r\n";
+			return String.format("bipush %s%n", ((I8) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I16 ){
-			return "bipush " + ((I16) literal.VALUE).VALUE + "\r\n";
+			return String.format("bipush %s%n", ((I16) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I32 ){
-			return "bipush " + ((I32) literal.VALUE).VALUE + "\r\n";
+			return String.format("bipush %s%n", ((I32) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I64 ){
-			return "bipush " + ((I64) literal.VALUE).VALUE + "\r\n";
+			return String.format("bipush %s%n", ((I64) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof F32 ){
-			return "bipush " + ((F32) literal.VALUE).VALUE + "\r\n";
+			return String.format("bipush %s%n", ((F32) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof F64 ){
-			return "bipush " + ((F64) literal.VALUE).VALUE + "\r\n";
+			return String.format("bipush %s%n", ((F64) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof Bool ){
 			String appendix = (((Bool) literal.VALUE).VALUE) ? "1" : "0";
-			return "iconst_" + appendix + "\r\n";
+			return String.format("iconst_%s%n", appendix);
 		}
 		throw new RuntimeException( "unhandled branch" );
 	}
