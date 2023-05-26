@@ -1,7 +1,6 @@
 package de.dhbw.mh.slang.codegen;
 
-import java.io.Console;
-
+import de.dhbw.mh.slang.Datatype;
 import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.F32;
 import de.dhbw.mh.slang.F64;
@@ -17,7 +16,7 @@ import de.dhbw.mh.slang.ast.AstVisitor;
 
 public class JavaBytecodeGenerator implements AstVisitor<String> {
 	
-	private int counterIDLOR = 0;
+	private int labelCounter = 0;
 
 	public JavaBytecodeGenerator( ){
 		super( );
@@ -30,7 +29,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}else if( literal.VALUE instanceof I16 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof I32 ){
-			throw new RuntimeException( "not yet implemented" );
+            return String.format("ldc %s%n", ((I32) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I64 ){
 			return String.format( "ldc2_w %s%n",  ((I64) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof F32 ){
@@ -74,7 +73,8 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case MULTIPLY:{
-				throw new RuntimeException( "not yet implemented" );
+                char resultChar = getBytecodeDatatypeChar(node.getDatatype());
+                return String.format("%s%s%cmul%n", lhs, rhs, resultChar);
 			}
 			case DIVIDE:{
 				String pattern = "%s%s%s%n";
@@ -101,16 +101,16 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				StringBuilder stringBuilder = new StringBuilder();
 
 				stringBuilder.append(lhs);
-				stringBuilder.append("ifne #" + counterIDLOR + "_true%n");
+				stringBuilder.append("ifne #" + labelCounter + "_true%n");
 				stringBuilder.append(rhs);
-				stringBuilder.append("ifne #" + counterIDLOR + "_true%n");
+				stringBuilder.append("ifne #" + labelCounter + "_true%n");
 				stringBuilder.append("iconst_0%n");
-				stringBuilder.append("goto #" + counterIDLOR + "_end%n");
-				stringBuilder.append("#" + counterIDLOR + "_true:%n");
+				stringBuilder.append("goto #" + labelCounter + "_end%n");
+				stringBuilder.append("#" + labelCounter + "_true:%n");
 				stringBuilder.append("iconst_1%n");
-				stringBuilder.append("#" + counterIDLOR + "_end:%n");
+				stringBuilder.append("#" + labelCounter + "_end:%n");
 
-				counterIDLOR++;
+				labelCounter++;
 				return String.format(stringBuilder.toString());
 			}
 			case COMPARE_EQUAL:{
@@ -120,8 +120,17 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case LESS_THAN:{
-				throw new RuntimeException( "not yet implemented" );
-			}
+                var sb = new StringBuilder();
+                sb.append(lhs);
+                sb.append(rhs);
+                sb.append("if_icmpge #" + labelCounter + "_ge%n");
+                sb.append("iconst_1%n");
+                sb.append("goto #" + labelCounter + "_end%n");
+                sb.append("#" + labelCounter + "_ge:%n");
+                sb.append("iconst_0%n");
+                sb.append("#" + labelCounter + "_end:%n");
+                return String.format(sb.toString());
+            }
 			case GREATER_OR_EQUAL:{
 				throw new RuntimeException( "not yet implemented" );
 			}
@@ -143,5 +152,29 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}
 		throw new RuntimeException( "unhandled branch" );
 	}
+
+    private char getBytecodeDatatypeChar(Datatype datatype) {
+        char result;
+        switch (datatype) {
+            case BOOL:
+            case I8:
+            case I16:
+            case I32:
+                result = 'i';
+                break;
+            case I64:
+                result = 'l';
+                break;
+            case F32:
+                result = 'f';
+                break;
+            case F64:
+                result = 'd';
+                break;
+            default:
+                throw new RuntimeException("unhandled branch");
+        }
+        return result;
+    }
 
 }
