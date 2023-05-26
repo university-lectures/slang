@@ -1,5 +1,7 @@
 package de.dhbw.mh.slang.codegen;
 
+import java.io.Console;
+
 import de.dhbw.mh.slang.Bool;
 import de.dhbw.mh.slang.F32;
 import de.dhbw.mh.slang.F64;
@@ -15,6 +17,8 @@ import de.dhbw.mh.slang.ast.AstVisitor;
 
 public class JavaBytecodeGenerator implements AstVisitor<String> {
 	
+	private int counterIDLOR = 0;
+
 	public JavaBytecodeGenerator( ){
 		super( );
 	}
@@ -82,7 +86,20 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case LOGICAL_OR:{
-				throw new RuntimeException( "not yet implemented" );
+				StringBuilder stringBuilder = new StringBuilder();
+
+				stringBuilder.append(lhs);
+				stringBuilder.append("ifne #" + counterIDLOR + "_true%n");
+				stringBuilder.append(rhs);
+				stringBuilder.append("ifne #" + counterIDLOR + "_true%n");
+				stringBuilder.append("iconst_0%n");
+				stringBuilder.append("goto #" + counterIDLOR + "_end%n");
+				stringBuilder.append("#" + counterIDLOR + "_true:%n");
+				stringBuilder.append("iconst_1%n");
+				stringBuilder.append("#" + counterIDLOR + "_end:%n");
+
+				counterIDLOR++;
+				return String.format(stringBuilder.toString());
 			}
 			case COMPARE_EQUAL:{
 				throw new RuntimeException( "not yet implemented" );
