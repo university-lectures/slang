@@ -14,7 +14,7 @@ import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.ast.AstVisitor;
 
 public class JavaBytecodeGenerator implements AstVisitor<String> {
-	
+	private int counterIDLAND;
 	public JavaBytecodeGenerator( ){
 		super( );
 	}
@@ -34,7 +34,11 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}else if( literal.VALUE instanceof F64 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof Bool ){
-			throw new RuntimeException( "not yet implemented" );
+			if (((Bool) literal.VALUE).VALUE) {
+				return String.format("iconst_1%n");
+			} else {
+				return String.format("iconst_0%n");
+			}
 		}
 		throw new RuntimeException( "unhandled branch" );
 	}
@@ -76,7 +80,18 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case LOGICAL_AND:{
-				throw new RuntimeException( "not yet implemented" );
+				String template = "%s" +
+						"%s%n" +
+						"%s" +
+						"%s%n" +
+						"%s%n" +
+						"goto #" + counterIDLAND + "_end%n" +
+						"%s%n" +
+						"%s%n" +
+						"#" + counterIDLAND + "_end:%n";
+				String result = String.format( template, lhs, "ifeq #" + counterIDLAND + "_false", rhs, "ifeq #" + counterIDLAND + "_false", "iconst_1", "#" + counterIDLAND + "_false:", "iconst_0" );
+				counterIDLAND++;
+				return result;
 			}
 			case LOGICAL_OR:{
 				throw new RuntimeException( "not yet implemented" );
