@@ -19,6 +19,8 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		super( );
 	}
 
+	public int counter_greater;
+
 	@Override
 	public String visit( AstLiteral literal ){
 		if( literal.VALUE instanceof I8 ){
@@ -92,16 +94,17 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 			}
 			case GREATER_OR_EQUAL:{
 				String result = "";
-				result += "LHS" + System.lineSeparator();
-				result += "RHS" + System.lineSeparator();
-				result += "ifeq #true" + System.lineSeparator();
+				result += lhs + System.lineSeparator();
+				result += rhs + System.lineSeparator();
+				result += "ifeq #true_ge" + counter_greater + System.lineSeparator();
 				result += "isub" + System.lineSeparator();
-				result += "if_icmpgt #true" + System.lineSeparator();  //wir interpretieren das als rhs - lhs
+				result += "if_icmpgt #true_ge" + counter_greater + System.lineSeparator();
 				result += "iconst_0" + System.lineSeparator();
-				result += "goto #end" + System.lineSeparator();
-				result += "true:" + System.lineSeparator();
+				result += "goto #end_ge" + counter_greater + System.lineSeparator();
+				result += "#true_ge" + counter_greater + System.lineSeparator();
 				result += "iconst_1" + System.lineSeparator();
-				result += "#end" + System.lineSeparator();
+				result +=  "#end_ge" + counter_greater + System.lineSeparator();
+				counter_greater++;
 				return result;
 			}
 			case GREATER_THAN:{
