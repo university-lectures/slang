@@ -1,17 +1,7 @@
 package de.dhbw.mh.slang.codegen;
 
-import de.dhbw.mh.slang.Bool;
-import de.dhbw.mh.slang.F32;
-import de.dhbw.mh.slang.F64;
-import de.dhbw.mh.slang.I16;
-import de.dhbw.mh.slang.I32;
-import de.dhbw.mh.slang.I64;
-import de.dhbw.mh.slang.I8;
-import de.dhbw.mh.slang.ast.AstBinaryOperation;
-import de.dhbw.mh.slang.ast.AstLiteral;
-import de.dhbw.mh.slang.ast.AstUnaryOperation;
-import de.dhbw.mh.slang.ast.AstVariable;
-import de.dhbw.mh.slang.ast.AstVisitor;
+import de.dhbw.mh.slang.*;
+import de.dhbw.mh.slang.ast.*;
 
 public class JavaBytecodeGenerator implements AstVisitor<String> {
 	
@@ -22,19 +12,37 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 	@Override
 	public String visit( AstLiteral literal ){
 		if( literal.VALUE instanceof I8 ){
-			throw new RuntimeException( "not yet implemented" );
+			return "bipush " + ((I8) literal.VALUE).VALUE + "\r\n";
 		}else if( literal.VALUE instanceof I16 ){
-			throw new RuntimeException( "not yet implemented" );
+			return "bipush " + ((I16) literal.VALUE).VALUE + "\r\n";
 		}else if( literal.VALUE instanceof I32 ){
-			throw new RuntimeException( "not yet implemented" );
+			return "bipush " + ((I32) literal.VALUE).VALUE + "\r\n";
 		}else if( literal.VALUE instanceof I64 ){
-			throw new RuntimeException( "not yet implemented" );
+			return "bipush " + ((I64) literal.VALUE).VALUE + "\r\n";
 		}else if( literal.VALUE instanceof F32 ){
-			throw new RuntimeException( "not yet implemented" );
+			return "bipush " + ((F32) literal.VALUE).VALUE + "\r\n";
 		}else if( literal.VALUE instanceof F64 ){
-			throw new RuntimeException( "not yet implemented" );
+			return "bipush " + ((F64) literal.VALUE).VALUE + "\r\n";
 		}else if( literal.VALUE instanceof Bool ){
-			throw new RuntimeException( "not yet implemented" );
+			String appendix = (((Bool) literal.VALUE).VALUE) ? "1" : "0";
+			return "iconst_" + appendix + "\r\n";
+		}
+		throw new RuntimeException( "unhandled branch" );
+	}
+
+	private char getNodeDatatype(AstNode node){
+		switch (node.getDatatype()){
+			case I8:
+			case I16:
+			case I32:
+			case BOOL:
+				return 'i';
+			case I64:
+				return 'l';
+			case F32:
+				return 'f';
+			case F64:
+				return 'd';
 		}
 		throw new RuntimeException( "unhandled branch" );
 	}
@@ -46,12 +54,13 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 
 	@Override
 	public String visitPost( AstUnaryOperation node, String base ){
+		char Datatype = getNodeDatatype(node);
 		switch( node.OPERATOR ){
 			case NEGATIVE_SIGN:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("%sneg%n", Datatype);
 			}
 			case POSITIVE_SIGN:{
-				throw new RuntimeException( "not yet implemented" );
+				return "";
 			}
 		}
 		throw new RuntimeException( "unhandled branch" );
@@ -59,21 +68,23 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 
 	@Override
 	public String visitPost( AstBinaryOperation node, String lhs, String rhs ){
+		char datatype = getNodeDatatype(node);
+
 		switch( node.OPERATOR ){
-			case ADD:{
-				throw new RuntimeException( "not yet implemented" );
+			case ADD:{ // lhs rhs add
+				return String.format("%s%s%sadd%n", lhs, rhs, datatype);
 			}
 			case SUBTRACT:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("%s%s%ssub%n", lhs, rhs, datatype);
 			}
 			case MULTIPLY:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("%s%s%smul%n", lhs, rhs, datatype);
 			}
 			case DIVIDE:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("%s%s%sdiv%n", lhs, rhs, datatype);
 			}
 			case MODULO:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("%s%s%srem%n", lhs, rhs, datatype);
 			}
 			case LOGICAL_AND:{
 				throw new RuntimeException( "not yet implemented" );
@@ -82,10 +93,10 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case COMPARE_EQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("%s%sif_icmpne #0_ne%niconst_1%ngoto #0_end%n#0_ne:%niconst_0%n#0_end:%n", lhs, rhs);
 			}
 			case COMPARE_UNEQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("%s%sif_icmpeq #0_eq%niconst_1%ngoto #0_end%n#0_eq:%niconst_0%n#0_end:%n", lhs, rhs);
 			}
 			case LESS_THAN:{
 				throw new RuntimeException( "not yet implemented" );
