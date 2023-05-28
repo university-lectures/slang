@@ -33,7 +33,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}else if( literal.VALUE instanceof I64 ){
 			return String.format( "ldc2_w %s%n",  ((I64) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof F32 ){
-			throw new RuntimeException( "not yet implemented" );
+			return String.format("ldc %sf%n", ((F32) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof F64 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof Bool ){
@@ -92,7 +92,25 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 
 			}
 			case MODULO:{
-				throw new RuntimeException( "not yet implemented" );
+				StringBuilder builder = new StringBuilder();
+				builder.append(lhs);
+				builder.append(rhs);
+				switch (node.getDatatype()) {
+					case BOOL: case I8: case I16: case I32:
+						builder.append("i");
+						break;
+					case I64:
+						builder.append("l");
+						break;
+					case F32:
+						builder.append("f");
+						break;
+					case F64:
+						builder.append("d");
+						break;
+				}
+				builder.append(String.format("rem%n"));
+				return builder.toString();
 			}
 			case LOGICAL_AND:{
 				throw new RuntimeException( "not yet implemented" );
@@ -144,7 +162,16 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				return string;
 			}
 			case LESS_OR_EQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				StringBuilder builder = new StringBuilder();
+				builder.append(lhs);
+				builder.append(rhs);
+				builder.append(String.format("if_icmpgt #0_gt%n"));
+				builder.append(String.format("iconst_1%n"));
+				builder.append(String.format("goto #0_end%n"));
+				builder.append(String.format("#0_gt:%n"));
+				builder.append(String.format("iconst_0%n"));
+				builder.append(String.format("#0_end:%n"));
+				return builder.toString();
 			}
 			case POWER:{
 				throw new RuntimeException( "not yet implemented" );
