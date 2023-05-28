@@ -15,7 +15,8 @@ import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.ast.AstVisitor;
 
 public class JavaBytecodeGenerator implements AstVisitor<String> {
-	
+
+	private int counterIDLAND;
 	private int labelCounter = 0;
 
 	public JavaBytecodeGenerator( ){
@@ -113,7 +114,18 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				return builder.toString();
 			}
 			case LOGICAL_AND:{
-				throw new RuntimeException( "not yet implemented" );
+				String template = "%s" +
+						"%s%n" +
+						"%s" +
+						"%s%n" +
+						"%s%n" +
+						"goto #" + counterIDLAND + "_end%n" +
+						"%s%n" +
+						"%s%n" +
+						"#" + counterIDLAND + "_end:%n";
+				String result = String.format( template, lhs, "ifeq #" + counterIDLAND + "_false", rhs, "ifeq #" + counterIDLAND + "_false", "iconst_1", "#" + counterIDLAND + "_false:", "iconst_0" );
+				counterIDLAND++;
+				return result;
 			}
 			case LOGICAL_OR:{
 				StringBuilder stringBuilder = new StringBuilder();
