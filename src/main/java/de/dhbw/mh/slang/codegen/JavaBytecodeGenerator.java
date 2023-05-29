@@ -14,15 +14,15 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		if( literal.VALUE instanceof I8 ){
 			return String.format("bipush %s%n", ((I8) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I16 ){
-			return String.format("bipush %s%n", ((I16) literal.VALUE).VALUE);
+			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof I32 ){
-			return String.format("bipush %s%n", ((I32) literal.VALUE).VALUE);
+			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof I64 ){
-			return String.format("bipush %s%n", ((I64) literal.VALUE).VALUE);
+			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof F32 ){
-			return String.format("bipush %s%n", ((F32) literal.VALUE).VALUE);
+			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof F64 ){
-			return String.format("bipush %s%n", ((F64) literal.VALUE).VALUE);
+			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof Bool ){
 			String appendix = (((Bool) literal.VALUE).VALUE) ? "1" : "0";
 			return String.format("iconst_%s%n", appendix);
@@ -57,10 +57,10 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		char Datatype = getNodeDatatype(node);
 		switch( node.OPERATOR ){
 			case NEGATIVE_SIGN:{
-				return String.format("%sneg%n", Datatype);
+				throw new RuntimeException( "not yet implemented" );
 			}
 			case POSITIVE_SIGN:{
-				return "";
+				throw new RuntimeException( "not yet implemented" );
 			}
 		}
 		throw new RuntimeException( "unhandled branch" );
@@ -75,16 +75,16 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				return String.format("%s%s%sadd%n", lhs, rhs, datatype);
 			}
 			case SUBTRACT:{
-				return String.format("%s%s%ssub%n", lhs, rhs, datatype);
+				throw new RuntimeException( "not yet implemented" );
 			}
 			case MULTIPLY:{
-				return String.format("%s%s%smul%n", lhs, rhs, datatype);
+				throw new RuntimeException( "not yet implemented" );
 			}
 			case DIVIDE:{
-				return String.format("%s%s%sdiv%n", lhs, rhs, datatype);
+				throw new RuntimeException( "not yet implemented" );
 			}
 			case MODULO:{
-				return String.format("%s%s%srem%n", lhs, rhs, datatype);
+				throw new RuntimeException( "not yet implemented" );
 			}
 			case LOGICAL_AND:{
 				throw new RuntimeException( "not yet implemented" );
