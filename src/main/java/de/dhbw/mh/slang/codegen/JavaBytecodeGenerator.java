@@ -96,7 +96,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				return String.format("%s%sif_icmpne #0_ne%niconst_1%ngoto #0_end%n#0_ne:%niconst_0%n#0_end:%n", lhs, rhs);
 			}
 			case COMPARE_UNEQUAL:{
-				return String.format("%s%sif_icmpeq #0_eq%niconst_1%ngoto #0_end%n#0_eq:%niconst_0%n#0_end:%n", lhs, rhs);
+				throw new RuntimeException( "not yet implemented" );
 			}
 			case LESS_THAN:{
 				throw new RuntimeException( "not yet implemented" );
