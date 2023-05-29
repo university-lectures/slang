@@ -19,7 +19,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		super( );
 	}
 
-	public int counter_greater;
+	public int counter_greater_less_equals;
 
 	@Override
 	public String visit( AstLiteral literal ){
@@ -34,7 +34,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}else if( literal.VALUE instanceof F32 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof F64 ){
-			throw new RuntimeException( "not yet implemented" );
+			return "ldc2_w " + literal.VALUE.toString().substring(0, literal.VALUE.toString().length()-3) + "d" + System.lineSeparator();
 		}else if( literal.VALUE instanceof Bool ){
 			throw new RuntimeException( "not yet implemented" );
 		}
@@ -90,28 +90,52 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case LESS_THAN:{
-				throw new RuntimeException( "not yet implemented" );
+				String result = "";
+				result += lhs;
+				result += rhs;
+				result += "if_icmplt #true_lt" + counter_greater_less_equals + System.lineSeparator();
+				result += "iconst_0" + System.lineSeparator();
+				result += "goto #end_lt" + counter_greater_less_equals + System.lineSeparator();
+				result += "#true_lt" + counter_greater_less_equals + System.lineSeparator();
+				result += "iconst_1" + System.lineSeparator();
+				result += "#end_lt" + counter_greater_less_equals + System.lineSeparator();
+				return result;
 			}
 			case GREATER_OR_EQUAL:{
 				String result = "";
-				result += lhs + System.lineSeparator();
-				result += rhs + System.lineSeparator();
-				result += "ifeq #true_ge" + counter_greater + System.lineSeparator();
-				result += "isub" + System.lineSeparator();
-				result += "if_icmpgt #true_ge" + counter_greater + System.lineSeparator();
+				result += lhs;
+				result += rhs;
+				result += "if_icmpge #true_ge" + counter_greater_less_equals + System.lineSeparator();
 				result += "iconst_0" + System.lineSeparator();
-				result += "goto #end_ge" + counter_greater + System.lineSeparator();
-				result += "#true_ge" + counter_greater + System.lineSeparator();
+				result += "goto #end_ge" + counter_greater_less_equals + System.lineSeparator();
+				result += "#true_ge" + counter_greater_less_equals + System.lineSeparator();
 				result += "iconst_1" + System.lineSeparator();
-				result +=  "#end_ge" + counter_greater + System.lineSeparator();
-				counter_greater++;
+				result += "#end_ge" + counter_greater_less_equals + System.lineSeparator();
 				return result;
 			}
 			case GREATER_THAN:{
-				throw new RuntimeException( "not yet implemented" );
+				String result = "";
+				result += lhs;
+				result += rhs;
+				result += "if_icmpgt #true_gt" + counter_greater_less_equals + System.lineSeparator();
+				result += "iconst_0" + System.lineSeparator();
+				result += "goto #end_gt" + counter_greater_less_equals + System.lineSeparator();
+				result += "#true_gt" + counter_greater_less_equals + System.lineSeparator();
+				result += "iconst_1" + System.lineSeparator();
+				result += "#end_gt" + counter_greater_less_equals + System.lineSeparator();
+				return result;
 			}
 			case LESS_OR_EQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				String result = "";
+				result += lhs;
+				result += rhs;
+				result += "if_icmple #true_le" + counter_greater_less_equals + System.lineSeparator();
+				result += "iconst_0" + System.lineSeparator();
+				result += "goto #end_le" + counter_greater_less_equals + System.lineSeparator();
+				result += "#true_le" + counter_greater_less_equals + System.lineSeparator();
+				result += "iconst_1" + System.lineSeparator();
+				result += "#end_le" + counter_greater_less_equals + System.lineSeparator();
+				return result;
 			}
 			case POWER:{
 				throw new RuntimeException( "not yet implemented" );
@@ -121,3 +145,4 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 	}
 
 }
+
