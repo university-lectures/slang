@@ -77,7 +77,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case SUBTRACT:{
-				return String.format("LHS%nRHS%n" + prefix + "sub%n");
+				return String.format("%s%s" + prefix + "sub%n", lhs, rhs);
 			}
 			case MULTIPLY:{
 				throw new RuntimeException( "not yet implemented" );
@@ -98,7 +98,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case COMPARE_UNEQUAL:{
-				return String.format("LHS%nRHS%nif_icmpeq #0_eq%niconst_1%ngoto #0_end%n#0_eq:%niconst_0%n#0_end:%n");
+				return String.format( "%s%sif_icmpeq #0_eq%niconst_1%ngoto #0_end%n#0_eq:%niconst_0%n#0_end:%n", lhs, rhs);
 			}
 			case LESS_THAN:{
 				// return String.format("LHS%nRHS%nif_icmplt #0_lt%niconst_0%ngoto #0_end%n#0_lt:%niconst_1%n#0_end:%n");
