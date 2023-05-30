@@ -8,6 +8,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
+		<antlr4.plugin.version>4.7</antlr4.plugin.version>
+		<antlr4.version>4.7</antlr4.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -52,6 +54,11 @@
 			<version>3.10.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4-runtime</artifactId>
+			<version>${antlr4.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -81,6 +88,22 @@
 						<phase>prepare-package</phase>
 						<goals>
 							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-maven-plugin</artifactId>
+				<version>${antlr4.plugin.version}</version>
+				<configuration>
+					<listener>false</listener>
+					<visitor>true</visitor>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>antlr4</goal>
 						</goals>
 					</execution>
 				</executions>
