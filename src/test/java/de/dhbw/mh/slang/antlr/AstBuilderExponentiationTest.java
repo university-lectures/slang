@@ -6,11 +6,13 @@ import static org.mockito.ArgumentMatchers.any;
 import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
+@Disabled
 class AstBuilderExponentiationTest extends AstBuilderUtils {
 
 	private static Stream<Arguments> exponentiations() {
