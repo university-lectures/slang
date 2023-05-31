@@ -9,7 +9,9 @@ import de.dhbw.mh.slang.antlr.SlangParser.LogicalOrExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.MultiplicativeExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.RelationalExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.SignedTermContext;
+import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstNode;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class AstBuilder extends SlangBaseVisitor<AstNode> {
 	
@@ -45,7 +47,39 @@ public class AstBuilder extends SlangBaseVisitor<AstNode> {
 	
 	@Override
 	public AstNode visitMultiplicativeExpression( MultiplicativeExpressionContext ctx ){
-		return super.visitMultiplicativeExpression( ctx );
+        if (ctx.children.size() == 1)
+        {
+            return visitSignedTerm(ctx.signedTerm(0));
+        }
+
+        AstNode left = null;
+        for (int i = 0; i < ctx.children.size(); i++)
+        {
+            if (i == 0)
+            {
+                left = visitSignedTerm(ctx.signedTerm(i));
+            }
+
+            if (ctx.children.get(i) instanceof TerminalNodeImpl)
+            {
+                switch (((TerminalNodeImpl) ctx.children.get(i)).getSymbol().getType())
+                {
+                    case SlangLexer.MUL:
+                        left = new AstBinaryOperation(null, left, AstBinaryOperation.Operator.MULTIPLY, visitSignedTerm(ctx.signedTerm(i + 1)));
+                        break;
+                    case SlangLexer.DIV:
+                        left = new AstBinaryOperation(null, left, AstBinaryOperation.Operator.DIVIDE, visitSignedTerm(ctx.signedTerm(i + 1)));
+                        break;
+                    case SlangLexer.MOD:
+                        left = new AstBinaryOperation(null, left, AstBinaryOperation.Operator.MODULO, visitSignedTerm(ctx.signedTerm(i + 1)));
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown operator");
+                }
+            }
+        }
+
+        return left;
 	}
 	
 	@Override
