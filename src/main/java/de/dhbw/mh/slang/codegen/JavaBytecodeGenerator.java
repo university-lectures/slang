@@ -1,18 +1,7 @@
 package de.dhbw.mh.slang.codegen;
 
-import de.dhbw.mh.slang.Datatype;
-import de.dhbw.mh.slang.Bool;
-import de.dhbw.mh.slang.F32;
-import de.dhbw.mh.slang.F64;
-import de.dhbw.mh.slang.I16;
-import de.dhbw.mh.slang.I32;
-import de.dhbw.mh.slang.I64;
-import de.dhbw.mh.slang.I8;
-import de.dhbw.mh.slang.ast.AstBinaryOperation;
-import de.dhbw.mh.slang.ast.AstLiteral;
-import de.dhbw.mh.slang.ast.AstUnaryOperation;
-import de.dhbw.mh.slang.ast.AstVariable;
-import de.dhbw.mh.slang.ast.AstVisitor;
+import de.dhbw.mh.slang.*;
+import de.dhbw.mh.slang.ast.*;
 
 public class JavaBytecodeGenerator implements AstVisitor<String> {
 
@@ -26,7 +15,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 	@Override
 	public String visit( AstLiteral literal ){
 		if( literal.VALUE instanceof I8 ){
-			throw new RuntimeException( "not yet implemented" );
+			return String.format("bipush %s%n", ((I8) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I16 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof I32 ){
@@ -38,10 +27,25 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}else if( literal.VALUE instanceof F64 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof Bool ){
-			if(((Bool) literal.VALUE).VALUE){
-				return String.format("iconst_1%n");
-			}
-			return String.format("iconst_0%n");
+			String appendix = (((Bool) literal.VALUE).VALUE) ? "1" : "0";
+			return String.format("iconst_%s%n", appendix);
+		}
+		throw new RuntimeException( "unhandled branch" );
+	}
+
+	private char getNodeDatatype(AstNode node){
+		switch (node.getDatatype()){
+			case I8:
+			case I16:
+			case I32:
+			case BOOL:
+				return 'i';
+			case I64:
+				return 'l';
+			case F32:
+				return 'f';
+			case F64:
+				return 'd';
 		}
 		throw new RuntimeException( "unhandled branch" );
 	}
@@ -53,6 +57,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 
 	@Override
 	public String visitPost( AstUnaryOperation node, String base ){
+		char Datatype = getNodeDatatype(node);
 		switch( node.OPERATOR ){
 			case NEGATIVE_SIGN:{
 				throw new RuntimeException( "not yet implemented" );
@@ -66,9 +71,11 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 
 	@Override
 	public String visitPost( AstBinaryOperation node, String lhs, String rhs ){
+		char datatype = getNodeDatatype(node);
+
 		switch( node.OPERATOR ){
-			case ADD:{
-				throw new RuntimeException( "not yet implemented" );
+			case ADD:{ // lhs rhs add
+				return String.format("%s%s%sadd%n", lhs, rhs, datatype);
 			}
 			case SUBTRACT:{
 				throw new RuntimeException( "not yet implemented" );
@@ -144,7 +151,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				return String.format(stringBuilder.toString());
 			}
 			case COMPARE_EQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("%s%sif_icmpne #0_ne%niconst_1%ngoto #0_end%n#0_ne:%niconst_0%n#0_end:%n", lhs, rhs);
 			}
 			case COMPARE_UNEQUAL:{
 				throw new RuntimeException( "not yet implemented" );
