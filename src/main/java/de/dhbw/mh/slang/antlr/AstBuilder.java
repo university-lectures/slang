@@ -1,5 +1,6 @@
 package de.dhbw.mh.slang.antlr;
 
+import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.antlr.SlangParser.AdditiveExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.AtomicExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.EqualityExpressionContext;
@@ -9,12 +10,15 @@ import de.dhbw.mh.slang.antlr.SlangParser.LogicalOrExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.MultiplicativeExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.RelationalExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.SignedTermContext;
+import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.ast.AstUnaryOperation;
 import de.dhbw.mh.slang.craft.parser.CraftedSlangParser;
-
 import static de.dhbw.mh.slang.craft.Token.Type.MINUS;
 import static de.dhbw.mh.slang.craft.Token.Type.PLUS;
+import de.dhbw.mh.slang.ast.AstVariable;
+import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class AstBuilder extends SlangBaseVisitor<AstNode> {
 	
@@ -80,6 +84,15 @@ public class AstBuilder extends SlangBaseVisitor<AstNode> {
 	
 	@Override
 	public AstNode visitAtomicExpression( AtomicExpressionContext ctx ){
+		if(ctx.IDENTIFIER() != null){
+			return new AstVariable(ctx.getText());
+		}
+		if(ctx.NUMERIC_LITERAL() != null){
+			return new AstLiteral(NumericalEvaluator.parse(ctx.getText()));
+		}
+		if(ctx.LPAREN() != null){
+			return this.visitLogicalOrExpression(ctx.logicalOrExpression());
+		}
 		return super.visitAtomicExpression( ctx );
 	}
 

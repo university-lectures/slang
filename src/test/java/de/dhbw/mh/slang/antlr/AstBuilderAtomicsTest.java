@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
-@Disabled
 class AstBuilderAtomicsTest extends AstBuilderUtils {
 
 	private static Stream<Arguments> atomicExpressions() {
