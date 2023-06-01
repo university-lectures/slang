@@ -4,7 +4,10 @@ import de.dhbw.mh.slang.*;
 import de.dhbw.mh.slang.ast.*;
 
 public class JavaBytecodeGenerator implements AstVisitor<String> {
-	
+
+	private int counterIDLAND;
+	private int labelCounter = 0;
+
 	public JavaBytecodeGenerator( ){
 		super( );
 	}
@@ -16,11 +19,11 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}else if( literal.VALUE instanceof I16 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof I32 ){
-			throw new RuntimeException( "not yet implemented" );
+            return String.format("ldc %s%n", ((I32) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I64 ){
-			throw new RuntimeException( "not yet implemented" );
+			return String.format( "ldc2_w %s%n",  ((I64) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof F32 ){
-			throw new RuntimeException( "not yet implemented" );
+			return String.format("ldc %sf%n", ((F32) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof F64 ){
 			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof Bool ){
@@ -78,19 +81,74 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case MULTIPLY:{
-				throw new RuntimeException( "not yet implemented" );
+                char resultChar = getBytecodeDatatypeChar(node.getDatatype());
+                return String.format("%s%s%cmul%n", lhs, rhs, resultChar);
 			}
 			case DIVIDE:{
-				throw new RuntimeException( "not yet implemented" );
+				String pattern = "%s%s%s%n";
+				switch ( node.getDatatype() )
+				{
+					case I64:
+						return String.format( pattern, lhs, rhs, "ldiv" );
+					case F64:
+						return String.format( pattern, lhs, rhs, "ddiv" );
+					case F32:
+						return String.format( pattern, lhs, rhs, "fdiv" );
+					default:
+						return String.format( pattern, lhs, rhs, "idiv" );
+				}
+
 			}
 			case MODULO:{
-				throw new RuntimeException( "not yet implemented" );
+				StringBuilder builder = new StringBuilder();
+				builder.append(lhs);
+				builder.append(rhs);
+				switch (node.getDatatype()) {
+					case BOOL: case I8: case I16: case I32:
+						builder.append("i");
+						break;
+					case I64:
+						builder.append("l");
+						break;
+					case F32:
+						builder.append("f");
+						break;
+					case F64:
+						builder.append("d");
+						break;
+				}
+				builder.append(String.format("rem%n"));
+				return builder.toString();
 			}
 			case LOGICAL_AND:{
-				throw new RuntimeException( "not yet implemented" );
+				String template = "%s" +
+						"%s%n" +
+						"%s" +
+						"%s%n" +
+						"%s%n" +
+						"goto #" + counterIDLAND + "_end%n" +
+						"%s%n" +
+						"%s%n" +
+						"#" + counterIDLAND + "_end:%n";
+				String result = String.format( template, lhs, "ifeq #" + counterIDLAND + "_false", rhs, "ifeq #" + counterIDLAND + "_false", "iconst_1", "#" + counterIDLAND + "_false:", "iconst_0" );
+				counterIDLAND++;
+				return result;
 			}
 			case LOGICAL_OR:{
-				throw new RuntimeException( "not yet implemented" );
+				StringBuilder stringBuilder = new StringBuilder();
+
+				stringBuilder.append(lhs);
+				stringBuilder.append("ifne #" + labelCounter + "_true%n");
+				stringBuilder.append(rhs);
+				stringBuilder.append("ifne #" + labelCounter + "_true%n");
+				stringBuilder.append("iconst_0%n");
+				stringBuilder.append("goto #" + labelCounter + "_end%n");
+				stringBuilder.append("#" + labelCounter + "_true:%n");
+				stringBuilder.append("iconst_1%n");
+				stringBuilder.append("#" + labelCounter + "_end:%n");
+
+				labelCounter++;
+				return String.format(stringBuilder.toString());
 			}
 			case COMPARE_EQUAL:{
 				return String.format("%s%sif_icmpne #0_ne%niconst_1%ngoto #0_end%n#0_ne:%niconst_0%n#0_end:%n", lhs, rhs);
@@ -99,16 +157,42 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case LESS_THAN:{
-				throw new RuntimeException( "not yet implemented" );
-			}
+                var sb = new StringBuilder();
+                sb.append(lhs);
+                sb.append(rhs);
+                sb.append("if_icmpge #" + labelCounter + "_ge%n");
+                sb.append("iconst_1%n");
+                sb.append("goto #" + labelCounter + "_end%n");
+                sb.append("#" + labelCounter + "_ge:%n");
+                sb.append("iconst_0%n");
+                sb.append("#" + labelCounter + "_end:%n");
+
+				labelCounter++;
+                return String.format(sb.toString());
+            }
 			case GREATER_OR_EQUAL:{
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case GREATER_THAN:{
-				throw new RuntimeException( "not yet implemented" );
+				String string = String.format( "%s%s%s%n", lhs, rhs, "if_icmple #0_le" );
+				string += String.format( "%s%n", "iconst_1" );
+				string += String.format( "%s%n", "goto #0_end" );
+				string += String.format( "%s%n", "#0_le:" );
+				string += String.format( "%s%n", "iconst_0" );
+				string += String.format( "%s%n", "#0_end:" );
+				return string;
 			}
 			case LESS_OR_EQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				StringBuilder builder = new StringBuilder();
+				builder.append(lhs);
+				builder.append(rhs);
+				builder.append(String.format("if_icmpgt #0_gt%n"));
+				builder.append(String.format("iconst_1%n"));
+				builder.append(String.format("goto #0_end%n"));
+				builder.append(String.format("#0_gt:%n"));
+				builder.append(String.format("iconst_0%n"));
+				builder.append(String.format("#0_end:%n"));
+				return builder.toString();
 			}
 			case POWER:{
 				throw new RuntimeException( "not yet implemented" );
@@ -116,5 +200,29 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}
 		throw new RuntimeException( "unhandled branch" );
 	}
+
+    private char getBytecodeDatatypeChar(Datatype datatype) {
+        char result;
+        switch (datatype) {
+            case BOOL:
+            case I8:
+            case I16:
+            case I32:
+                result = 'i';
+                break;
+            case I64:
+                result = 'l';
+                break;
+            case F32:
+                result = 'f';
+                break;
+            case F64:
+                result = 'd';
+                break;
+            default:
+                throw new RuntimeException("unhandled branch");
+        }
+        return result;
+    }
 
 }

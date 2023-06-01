@@ -10,7 +10,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import de.dhbw.mh.slang.Value;
 import de.dhbw.mh.slang.ast.AstNode;
 
-@Disabled
 class JavaBytecodeGenerator7Test extends JavaBytecodeGeneratorTest {
 	
 	private static final int GROUP_ID = 7;
