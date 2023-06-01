@@ -159,6 +159,8 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
                 sb.append("#" + labelCounter + "_ge:%n");
                 sb.append("iconst_0%n");
                 sb.append("#" + labelCounter + "_end:%n");
+
+				labelCounter++;
                 return String.format(sb.toString());
             }
 			case GREATER_OR_EQUAL:{
