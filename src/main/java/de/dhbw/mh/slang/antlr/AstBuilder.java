@@ -12,6 +12,10 @@ import de.dhbw.mh.slang.antlr.SlangParser.RelationalExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.SignedTermContext;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
+import de.dhbw.mh.slang.ast.AstUnaryOperation;
+import de.dhbw.mh.slang.craft.parser.CraftedSlangParser;
+import static de.dhbw.mh.slang.craft.Token.Type.MINUS;
+import static de.dhbw.mh.slang.craft.Token.Type.PLUS;
 import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -55,7 +59,22 @@ public class AstBuilder extends SlangBaseVisitor<AstNode> {
 	
 	@Override
 	public AstNode visitSignedTerm( SignedTermContext ctx ){
-		return super.visitSignedTerm( ctx );
+		if(ctx.PLUS() != null) {
+			return new AstUnaryOperation(
+					null,
+					AstUnaryOperation.Operator.POSITIVE_SIGN,
+					this.visit(ctx.exponentiation())
+			);
+		}
+		if(ctx.MINUS() != null) {
+			return new AstUnaryOperation(
+					null,
+					AstUnaryOperation.Operator.NEGATIVE_SIGN,
+					this.visit(ctx.exponentiation())
+			);
+		}
+
+		return this.visit(ctx.exponentiation());
 	}
 	
 	@Override
