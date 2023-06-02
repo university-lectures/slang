@@ -22,6 +22,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 	@Override
 	public String visit( AstLiteral literal ){
 		if( literal.VALUE instanceof I8 ){
+			throw new RuntimeException( "not yet implemented" );
 		}else if( literal.VALUE instanceof I16 ){
 			return String.format("sipush %s%n", ((I16) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I32 ){
