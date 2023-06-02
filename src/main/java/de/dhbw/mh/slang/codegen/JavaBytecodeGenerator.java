@@ -77,7 +77,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				throw new RuntimeException( "not yet implemented" );
 			}
 			case SUBTRACT:{
-				return String.format("%s%s" + prefix + "sub%n", lhs, rhs);
+				return String.format("%s%s%ssub%n", lhs, rhs, prefix);
 			}
 			case MULTIPLY:{
 				throw new RuntimeException( "not yet implemented" );
