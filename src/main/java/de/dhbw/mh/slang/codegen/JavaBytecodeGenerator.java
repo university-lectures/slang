@@ -17,7 +17,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		if( literal.VALUE instanceof I8 ){
 			return String.format("bipush %s%n", ((I8) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I16 ){
-			throw new RuntimeException( "not yet implemented" );
+			return String.format("sipush %s%n", ((I16) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I32 ){
             return String.format("ldc %s%n", ((I32) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof I64 ){
@@ -72,17 +72,16 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 	@Override
 	public String visitPost( AstBinaryOperation node, String lhs, String rhs ){
 		char datatype = getNodeDatatype(node);
-
 		switch( node.OPERATOR ){
 			case ADD:{ // lhs rhs add
 				return String.format("%s%s%sadd%n", lhs, rhs, datatype);
 			}
 			case SUBTRACT:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format("%s%s%ssub%n", lhs, rhs, datatype);
 			}
 			case MULTIPLY:{
-                char resultChar = getBytecodeDatatypeChar(node.getDatatype());
-                return String.format("%s%s%cmul%n", lhs, rhs, resultChar);
+        char resultChar = getBytecodeDatatypeChar(node.getDatatype());
+        return String.format("%s%s%cmul%n", lhs, rhs, resultChar);
 			}
 			case DIVIDE:{
 				String pattern = "%s%s%s%n";
@@ -154,24 +153,25 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				return String.format("%s%sif_icmpne #0_ne%niconst_1%ngoto #0_end%n#0_ne:%niconst_0%n#0_end:%n", lhs, rhs);
 			}
 			case COMPARE_UNEQUAL:{
-				throw new RuntimeException( "not yet implemented" );
+				return String.format( "%s%sif_icmpeq #0_eq%niconst_1%ngoto #0_end%n#0_eq:%niconst_0%n#0_end:%n", lhs, rhs);
 			}
 			case LESS_THAN:{
-                var sb = new StringBuilder();
-                sb.append(lhs);
-                sb.append(rhs);
-                sb.append("if_icmpge #" + labelCounter + "_ge%n");
-                sb.append("iconst_1%n");
-                sb.append("goto #" + labelCounter + "_end%n");
-                sb.append("#" + labelCounter + "_ge:%n");
-                sb.append("iconst_0%n");
-                sb.append("#" + labelCounter + "_end:%n");
+        var sb = new StringBuilder();
+        sb.append(lhs);
+        sb.append(rhs);
+        sb.append("if_icmpge #" + labelCounter + "_ge%n");
+        sb.append("iconst_1%n");
+        sb.append("goto #" + labelCounter + "_end%n");
+        sb.append("#" + labelCounter + "_ge:%n");
+        sb.append("iconst_0%n");
+        sb.append("#" + labelCounter + "_end:%n");
 
 				labelCounter++;
-                return String.format(sb.toString());
-            }
+        return String.format(sb.toString());
+      }
 			case GREATER_OR_EQUAL:{
 				throw new RuntimeException( "not yet implemented" );
+				
 			}
 			case GREATER_THAN:{
 				String string = String.format( "%s%s%s%n", lhs, rhs, "if_icmple #0_le" );
