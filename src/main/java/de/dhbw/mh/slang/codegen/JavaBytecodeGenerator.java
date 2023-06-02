@@ -69,8 +69,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 			case F32: prefix = "f";break;
 			case F64: prefix = "d";break;		
 			default:
-				prefix = "i";
-				break;
+				throw new RuntimeException( "unknown type" );
 		}
 		switch( node.OPERATOR ){
 			case ADD:{
