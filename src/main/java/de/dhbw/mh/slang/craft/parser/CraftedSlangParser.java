@@ -95,9 +95,8 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 *===========================================================*/
 
 	@Override
-	public AstNode conditionalExpression() {
-		// TODO Auto-generated method stub
-		return super.conditionalExpression();
+	public AstNode conditionalExpression( ){
+		return conditionalOrExpression();
 	}
   
 	/*===========================================================
@@ -626,7 +625,6 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		}
 
 		AstNode literal = this.literal();
-		this.LEXER.advance();
 		return literal;
 	}
 
