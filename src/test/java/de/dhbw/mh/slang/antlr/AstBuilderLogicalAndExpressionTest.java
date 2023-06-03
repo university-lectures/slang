@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
-@Disabled
+
 class AstBuilderLogicalAndExpressionTest extends AstBuilderUtils {
 
 	private static Stream<Arguments> logicalAndExpressions() {
