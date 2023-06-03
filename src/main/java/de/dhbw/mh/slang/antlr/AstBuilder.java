@@ -10,6 +10,7 @@ import de.dhbw.mh.slang.antlr.SlangParser.LogicalOrExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.MultiplicativeExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.RelationalExpressionContext;
 import de.dhbw.mh.slang.antlr.SlangParser.SignedTermContext;
+import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
 import de.dhbw.mh.slang.ast.AstUnaryOperation;
@@ -19,6 +20,7 @@ import static de.dhbw.mh.slang.craft.Token.Type.PLUS;
 import de.dhbw.mh.slang.ast.AstVariable;
 import de.dhbw.mh.slang.craft.lexer.NumericalEvaluator;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class AstBuilder extends SlangBaseVisitor<AstNode> {
 	
@@ -34,8 +36,31 @@ public class AstBuilder extends SlangBaseVisitor<AstNode> {
 	
 	@Override
 	public AstNode visitLogicalAndExpression( LogicalAndExpressionContext ctx ){
-		return super.visitLogicalAndExpression( ctx );
-	}
+		if (ctx.children.size() == 1) {
+			return visitEqualityExpression(ctx.equalityExpression(0));
+        }
+
+        AstNode left = null;
+        for (int i = 0; i < ctx.children.size(); i++) {
+            if (i == 0) {
+                left = visitEqualityExpression(ctx.equalityExpression(i));
+            }
+
+            if (ctx.children.get(i) instanceof TerminalNodeImpl) {
+                switch (((TerminalNodeImpl) ctx.children.get(i)).getSymbol().getType()) {
+                    case SlangLexer.LAND:
+                        left = new AstBinaryOperation(null, left, AstBinaryOperation.Operator.LOGICAL_AND,
+                                visitEqualityExpression(ctx.equalityExpression(i + 1)));
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown operator");
+                }
+            }
+        }
+
+        return left;
+    }
+	
 	
 	@Override
 	public AstNode visitEqualityExpression( EqualityExpressionContext ctx ){
