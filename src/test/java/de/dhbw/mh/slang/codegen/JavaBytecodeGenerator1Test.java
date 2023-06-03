@@ -111,8 +111,13 @@ class JavaBytecodeGenerator1Test extends JavaBytecodeGeneratorTest {
 	
 	@ParameterizedTest
 	@MethodSource("relationalOperations")
-	void relationalOperationsSuccessfullyGenerated( AstNode node, String instruction, String label ){
-		checkCodeGenerationForRelationalOperations( node, instruction, label );
+	void relationalOperationsSuccessfullyGenerated(
+			AstNode node,
+			String branch,
+			String unfulfilled,
+			String label,
+			String fulfilled ){
+		checkCodeGenerationForRelationalOperations( node, branch, unfulfilled, label, fulfilled );
 	}
 
 }
