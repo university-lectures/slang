@@ -21,6 +21,7 @@ import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstLiteral;
 import de.dhbw.mh.slang.ast.AstNode;
 
+
 class JavaBytecodeGeneratorTest {
 	
 	private static final AstLiteral LHS = new AstLiteral(new I8( (byte)45 ));
