@@ -22,17 +22,12 @@ import static de.dhbw.mh.slang.craft.Token.Type.POWER;
 import static de.dhbw.mh.slang.craft.Token.Type.RPAREN;
 import static de.dhbw.mh.slang.craft.Token.Type.TRUE;
 
-import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.management.RuntimeErrorException;
-
 import de.dhbw.mh.slang.Bool;
-import de.dhbw.mh.slang.I32;
 import de.dhbw.mh.slang.NumericValue;
 import de.dhbw.mh.slang.ast.AstBinaryOperation;
 import de.dhbw.mh.slang.ast.AstBinaryOperation.Operator;
@@ -61,8 +56,8 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 	private static Set<Token.Type> setOf( Set<Token.Type> base, Token.Type... types ){
 		Set<Token.Type> result;
-		result = Stream.of(types).collect(Collectors.toCollection(HashSet::new));
-		result.addAll(base);
+		result = Stream.of( types ).collect( Collectors.toCollection(HashSet::new) );
+		result.addAll( base );
 		return result;
 	}
 
@@ -98,49 +93,49 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	public AstNode conditionalExpression( ){
 		return conditionalOrExpression();
 	}
-  
+
 	/*===========================================================
 	 * conditionalOrExpression
 	 *===========================================================*/
 
 	@Override
 	public AstNode conditionalOrExpression( ){
-		switch(LEXER.lookahead().TYPE) {
+		switch( LEXER.lookahead().TYPE ){
 			case PLUS:
 			case MINUS:
 			case LPAREN:
 			case IDENTIFIER:
 			case NUMERIC_LITERAL:
-				return this.disjunction(conditionalAndExpression());
+				return this.disjunction( conditionalAndExpression() );
 			default:
-				Set<Token.Type> acceptedTypes = setOf(PLUS, MINUS, LPAREN, IDENTIFIER, NUMERIC_LITERAL);
-				throw this.parsingException(acceptedTypes);
+				Set<Token.Type> acceptedTypes = setOf( PLUS, MINUS, LPAREN, IDENTIFIER, NUMERIC_LITERAL );
+				throw this.parsingException( acceptedTypes );
 		}
 	}
 
 	@Override
 	AstNode disjunction( AstNode previous ){
-		switch(LEXER.lookahead().TYPE) {
+		switch( LEXER.lookahead().TYPE ){
 			case LOR:
-				return this.disjunction1(previous);
+				return this.disjunction1( previous );
 			case EOF:
 			case RPAREN:
-				return this.disjunction2(previous);
+				return this.disjunction2( previous );
 			default:
-				throw this.parsingException(Selector.DISJUNCTION);
+				throw this.parsingException( Selector.DISJUNCTION );
 		}
 	}
 
 	@Override
 	AstNode disjunction1( AstNode previous ){
-		if(LEXER.lookahead().TYPE != LOR) {
-			throw this.parsingException(LOR);
+		if( LEXER.lookahead().TYPE != LOR ){
+			throw this.parsingException( LOR );
 		} else {
-            LEXER.advance();
-        }
-
-		AstNode abo = new AstBinaryOperation(this.LEXER.lookahead().BEGIN,previous, Operator.LOGICAL_OR, conditionalAndExpression());
-        return this.disjunction(abo);
+			LEXER.advance();
+		}
+		AstNode abo = new AstBinaryOperation( this.LEXER.lookahead().BEGIN,
+				previous, Operator.LOGICAL_OR, conditionalAndExpression() );
+		return this.disjunction( abo );
 	}
 
 	@Override
@@ -153,44 +148,41 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 *===========================================================*/
 
 	@Override
-	public AstNode conditionalAndExpression() {
-		if (PLUS == LEXER.lookahead().TYPE || MINUS == LEXER.lookahead().TYPE || LPAREN == LEXER.lookahead().TYPE
-				|| IDENTIFIER == LEXER.lookahead().TYPE || Selector.LITERAL.contains(LEXER.lookahead().TYPE)) {
-			AstNode res = equation();
-			return conjunction(res);
-
+	public AstNode conditionalAndExpression( ){
+		if( PLUS == LEXER.lookahead().TYPE || MINUS == LEXER.lookahead().TYPE || LPAREN == LEXER.lookahead().TYPE
+				|| IDENTIFIER == LEXER.lookahead().TYPE || Selector.LITERAL.contains(LEXER.lookahead().TYPE) ){
+			AstNode res = equation( );
+			return conjunction( res );
 		}
-
-		throw parsingException(Selector.LITERAL);
-
+		throw parsingException( Selector.LITERAL );
 	}
 
 	@Override
-	AstNode conjunction(AstNode previous) {
+	AstNode conjunction( AstNode previous ){
 		// Reject anything except LAND
-		if (LEXER.lookahead().TYPE == LAND) {
-			return this.conjunction1(previous);
-		} else if (LEXER.lookahead().TYPE == EOF || LEXER.lookahead().TYPE == RPAREN || LEXER.lookahead().TYPE == LOR) {
-			return conjunction2(previous);
-		} else {
-			throw this.parsingException(Selector.CONJUNCTION);
-		}
-	}
-
-	@Override
-	AstNode conjunction1(AstNode previous) {
-		if (LEXER.lookahead().TYPE != LAND) {
-			throw this.parsingException(LAND);
+		if( LEXER.lookahead().TYPE == LAND ){
+			return this.conjunction1( previous );
+		}else if( LEXER.lookahead().TYPE == EOF || LEXER.lookahead().TYPE == RPAREN || LEXER.lookahead().TYPE == LOR ){
+			return conjunction2( previous );
 		}else{
-			LEXER.advance();
+			throw this.parsingException( Selector.CONJUNCTION );
 		}
-		AstBinaryOperation abo = new AstBinaryOperation(this.LEXER.lookahead().BEGIN, previous, Operator.LOGICAL_AND,
-				equation());		
-		return conjunction(abo);
 	}
 
 	@Override
-	AstNode conjunction2(AstNode previous) {
+	AstNode conjunction1( AstNode previous ){
+		if( LEXER.lookahead().TYPE != LAND ){
+			throw this.parsingException( LAND );
+		}else{
+			LEXER.advance( );
+		}
+		AstBinaryOperation abo = new AstBinaryOperation( this.LEXER.lookahead().BEGIN,
+				previous, Operator.LOGICAL_AND, equation() );
+		return conjunction( abo );
+	}
+
+	@Override
+	AstNode conjunction2( AstNode previous ){
 		return previous;
 	}
 
@@ -200,36 +192,34 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 	@Override
 	public AstNode equation( ){
-		if (PLUS == LEXER.lookahead().TYPE ||
+		if( PLUS == LEXER.lookahead().TYPE ||
 				MINUS == LEXER.lookahead().TYPE ||
 				LPAREN == LEXER.lookahead().TYPE ||
 				IDENTIFIER == LEXER.lookahead().TYPE ||
-				NUMERIC_LITERAL == LEXER.lookahead().TYPE) {
-			return equalities(relationalExpression());
+				NUMERIC_LITERAL == LEXER.lookahead().TYPE ){
+			return equalities( relationalExpression() );
 		}
-
-		return equalities(relationalExpression());
+		return equalities( relationalExpression() );
 	}
 
 	@Override
 	AstNode equalities( AstNode previous ){
-		if ( EQUAL == LEXER.lookahead().TYPE ){
-			return equalities1(previous);
+		if( EQUAL == LEXER.lookahead().TYPE ){
+			return equalities1( previous );
 		}
-		if ( NOT_EQUAL == LEXER.lookahead().TYPE ){
-			return equalities2(previous);
+		if( NOT_EQUAL == LEXER.lookahead().TYPE ){
+			return equalities2( previous );
 		}
-		if ( Selector.EQUALITIES3.contains( LEXER.lookahead().TYPE ) ) {
-			return equalities3(previous);
+		if( Selector.EQUALITIES3.contains( LEXER.lookahead().TYPE ) ){
+			return equalities3( previous );
 		}
-
 		throw parsingException( Selector.EQUALITIES );
 	}
 
 	@Override
 	AstNode equalities1( AstNode previous ){
 		match( Token.Type.EQUAL );
-		AstNode next = relationalExpression();
+		AstNode next = relationalExpression( );
 		AstNode result = new AstBinaryOperation( LEXER.lookahead().BEGIN,
 				previous, AstBinaryOperation.Operator.COMPARE_EQUAL, next );
 		return equalities( result );
@@ -238,7 +228,7 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	@Override
 	AstNode equalities2( AstNode previous ){
 		match( Token.Type.NOT_EQUAL );
-		AstNode next = relationalExpression();
+		AstNode next = relationalExpression( );
 		AstNode result = new AstBinaryOperation( LEXER.lookahead().BEGIN,
 				previous, AstBinaryOperation.Operator.COMPARE_UNEQUAL, next );
 		return equalities( result );
@@ -256,76 +246,75 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	@Override
 	public AstNode relationalExpression( ){
 		Token.Type type = LEXER.lookahead().TYPE;
-		String lexeme = LEXER.lookahead().LEXEME;
-
-		if(
-				NUMERIC_LITERAL == type
+		if( NUMERIC_LITERAL == type
 				|| IDENTIFIER == type
 				|| PLUS == type
 				|| MINUS == type
-				|| LPAREN == type)
-		{
-			AstNode previous = additiveExpression();
-			return relations(previous);
-		} else {
-			throw new RuntimeException();
+				|| LPAREN == type ){
+			AstNode previous = additiveExpression( );
+			return relations( previous );
+		}else{
+			throw new RuntimeException( );
 		}
 	}
 
 	@Override
 	public AstNode relations( AstNode previous ){
-		Token.Type type = LEXER.lookahead().TYPE;
-		switch (type) {
+		switch( LEXER.lookahead().TYPE ){
 			case LESS:
-				return relations1(previous);
+				return relations1( previous );
 			case GREATER:
-				return  relations2(previous);
+				return relations2( previous );
 			case LESS_EQUAL:
-				return relations3(previous);
+				return relations3( previous );
 			case GREATER_EQUAL:
-				return relations4(previous);
+				return relations4( previous );
 			case EOF:
 			case RPAREN:
 			case EQUAL:
 			case NOT_EQUAL:
 			case LAND:
 			case LOR:
-				return relations5(previous);
-			default: throw parsingException( Selector.RELATIONS );
+				return relations5( previous );
+			default:
+				throw parsingException( Selector.RELATIONS );
 		}
 	}
 
 	@Override
 	AstNode relations1( AstNode previous ){
 		match( Token.Type.LESS );
-		AstNode diese = additiveExpression();
-		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.LESS_THAN, diese);
-		return relations(middleAst);
-
+		AstNode diese = additiveExpression( );
+		AstBinaryOperation middleAst = new AstBinaryOperation( null,
+				previous, AstBinaryOperation.Operator.LESS_THAN, diese );
+		return relations( middleAst );
 	}
 
 	@Override
 	AstNode relations2( AstNode previous ){
 		match( Token.Type.GREATER );
-		AstNode diese = additiveExpression();
-		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.GREATER_THAN, diese);
-		return relations(middleAst);
+		AstNode diese = additiveExpression( );
+		AstBinaryOperation middleAst = new AstBinaryOperation( null,
+				previous, AstBinaryOperation.Operator.GREATER_THAN, diese );
+		return relations( middleAst );
 	}
 
 	@Override
 	AstNode relations3( AstNode previous ){
 		match( Token.Type.LESS_EQUAL );
-		AstNode diese = additiveExpression();
-		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.LESS_OR_EQUAL, diese);
-		return relations(middleAst);
+		AstNode diese = additiveExpression( );
+		AstBinaryOperation middleAst = new AstBinaryOperation( null,
+				previous, AstBinaryOperation.Operator.LESS_OR_EQUAL, diese );
+		return relations( middleAst );
 	}
 
 	@Override
 	AstNode relations4( AstNode previous ){
 		match( Token.Type.GREATER_EQUAL );
-		AstNode diese = additiveExpression();
-		AstBinaryOperation middleAst = new AstBinaryOperation(null, previous, AstBinaryOperation.Operator.GREATER_OR_EQUAL, diese);
-		return relations(middleAst);
+		AstNode diese = additiveExpression( );
+		AstBinaryOperation middleAst = new AstBinaryOperation( null,
+				previous, AstBinaryOperation.Operator.GREATER_OR_EQUAL, diese );
+		return relations( middleAst );
 	}
 
 	@Override
@@ -340,8 +329,8 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	@Override
 	public AstNode additiveExpression( ){
 		Set<Type> selectionSet = setOf( PLUS, MINUS, LPAREN, IDENTIFIER, NUMERIC_LITERAL );
-		if( selectionSet.contains(LEXER.lookahead().TYPE) ){
-			AstNode previous = multiplicativeExpression();
+		if( selectionSet.contains( LEXER.lookahead().TYPE ) ){
+			AstNode previous = multiplicativeExpression( );
 			return summand( previous );
 		}
 		throw parsingException( Selector.SUMMAND );
@@ -349,8 +338,8 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 	@Override
 	public AstNode summand( AstNode previous ){
-		Token token = LEXER.lookahead();
-		if( Selector.SUMMAND3.contains(token.TYPE) ){
+		Token token = LEXER.lookahead( );
+		if( Selector.SUMMAND3.contains( token.TYPE ) ){
 			return summand3( previous );
 		}
 		if( PLUS == token.TYPE ){
@@ -364,135 +353,137 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 	@Override
 	AstNode summand1( AstNode previous ){
-		if (PLUS == LEXER.lookahead().TYPE) {
+		if( PLUS == LEXER.lookahead().TYPE ){
 			CodeLocation location = LEXER.lookahead().BEGIN;
-			LEXER.advance();
-			AstNode next = multiplicativeExpression();
-			return summand(new AstBinaryOperation( location, previous, Operator.ADD, next));
+			LEXER.advance( );
+			AstNode next = multiplicativeExpression( );
+			return summand( new AstBinaryOperation( location, previous, Operator.ADD, next ) );
 		}
 		throw parsingException( Selector.SUMMAND );
 	}
 
 	@Override
 	AstNode summand2( AstNode previous ){
-		if (MINUS == LEXER.lookahead().TYPE) {
+		if( MINUS == LEXER.lookahead().TYPE ){
 			CodeLocation location = LEXER.lookahead().BEGIN;
-			LEXER.advance();
-			AstNode next = multiplicativeExpression();
-			return summand(new AstBinaryOperation( location, previous, Operator.SUBTRACT, next ));
+			LEXER.advance( );
+			AstNode next = multiplicativeExpression( );
+			return summand( new AstBinaryOperation( location, previous, Operator.SUBTRACT, next ) );
 		}
 		throw parsingException( Selector.SUMMAND );
 	}
 
 	@Override
 	AstNode summand3( AstNode previous ){
-		if( Selector.SUMMAND3.contains(LEXER.lookahead().TYPE) ){
+		if( Selector.SUMMAND3.contains( LEXER.lookahead().TYPE ) ){
 			return previous;
 		}
 		throw parsingException( Selector.SUMMAND3 );
 	}
 
-    /*===========================================================
-     * multiplicativeExpression
-     *===========================================================*/
+	/*===========================================================
+	 * multiplicativeExpression
+	 *===========================================================*/
 
-    @Override
-    public AstNode multiplicativeExpression(){
-        switch (LEXER.lookahead().TYPE)
-        {
-            case PLUS:
-            case MINUS:
-            case LPAREN:
-            case IDENTIFIER:
-            case NUMERIC_LITERAL:
-                return factor(signedTerm());
-        }
+	@Override
+	public AstNode multiplicativeExpression( ){
+		switch( LEXER.lookahead().TYPE ){
+			case PLUS:
+			case MINUS:
+			case LPAREN:
+			case IDENTIFIER:
+			case NUMERIC_LITERAL:
+				return factor( signedTerm() );
+			default: /* fall-through */
+		}
+		return factor( signedTerm() );
+	}
 
-        return factor(signedTerm());
-    }
+	@Override
+	AstNode factor( AstNode previous ){
+		switch( LEXER.lookahead().TYPE ){
+			case ASTERISK:
+				return factor1( previous );
+			case DIVIDE:
+				return factor2( previous );
+			case MODULO:
+				return factor3( previous );
+			default: /* fall-through */
+		}
+		if( Selector.FACTOR4.contains(LEXER.lookahead().TYPE) ){
+			return factor4( previous );
+		}
+		throw parsingException( Selector.FACTOR );
+	}
 
-    @Override
-    AstNode factor(AstNode previous){
-        switch (LEXER.lookahead().TYPE)
-        {
-            case ASTERISK:
-                return factor1(previous);
-            case DIVIDE:
-                return factor2(previous);
-            case MODULO:
-                return factor3(previous);
-        }
+	@Override
+	AstNode factor1( AstNode previous ){
+		match( ASTERISK );
+		AstNode next = signedTerm( );
+		AstNode result = new AstBinaryOperation( LEXER.lookahead().BEGIN,
+				previous, AstBinaryOperation.Operator.MULTIPLY, next );
+		return factor( result );
+	}
 
-        if (Selector.FACTOR4.contains(LEXER.lookahead().TYPE))
-            return factor4(previous);
+	@Override
+	AstNode factor2( AstNode previous ){
+		match( DIVIDE );
+		AstNode next = signedTerm( );
+		AstNode result = new AstBinaryOperation( LEXER.lookahead().BEGIN,
+				previous, AstBinaryOperation.Operator.DIVIDE, next );
+		return factor( result );
+	}
 
-        throw parsingException(Selector.FACTOR);
-    }
+	@Override
+	AstNode factor3( AstNode previous ){
+		match( MODULO );
+		AstNode next = signedTerm( );
+		AstNode result = new AstBinaryOperation( LEXER.lookahead().BEGIN,
+				previous, AstBinaryOperation.Operator.MODULO, next );
+		return factor( result );
+	}
 
-    @Override
-    AstNode factor1(AstNode previous){
-        match(ASTERISK);
-        AstNode next = signedTerm();
-        AstNode result = new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.MULTIPLY, next);
-        return factor(result);
-    }
-
-    @Override
-    AstNode factor2(AstNode previous){
-        match(DIVIDE);
-        AstNode next = signedTerm();
-        AstNode result = new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.DIVIDE, next);
-        return factor(result);
-    }
-
-    @Override
-    AstNode factor3(AstNode previous){
-        match(MODULO);
-        AstNode next = signedTerm();
-        AstNode result = new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.MODULO, next);
-        return factor(result);
-    }
-
-    @Override
-    AstNode factor4(AstNode previous){
-        return previous;
-    }
+	@Override
+	AstNode factor4( AstNode previous ){
+		return previous;
+	}
 	
 	
 	/*===========================================================
 	 * signedExpression
 	 *===========================================================*/
 
-    public AstNode signedTerm(){
-        if( PLUS == LEXER.lookahead().TYPE ){
-            return signedTerm1();
-        }
-        if( MINUS == LEXER.lookahead().TYPE ){
-            return signedTerm2();
-        }
-        if(Selector.SIGNED_TERM3.contains(LEXER.lookahead().TYPE)){
-            return signedTerm3();
-        }
-        throw parsingException(Selector.SIGNED_TERM);
-    }
+	public AstNode signedTerm( ){
+		if( PLUS == LEXER.lookahead().TYPE ){
+			return signedTerm1( );
+		}
+		if( MINUS == LEXER.lookahead().TYPE ){
+			return signedTerm2( );
+		}
+		if( Selector.SIGNED_TERM3.contains(LEXER.lookahead().TYPE) ){
+			return signedTerm3( );
+		}
+		throw parsingException( Selector.SIGNED_TERM );
+	}
 
-    @Override
-    AstNode signedTerm1(){
-        match(PLUS);
-        return new AstUnaryOperation(LEXER.lookahead().BEGIN, AstUnaryOperation.Operator.POSITIVE_SIGN, exponentiation());
-    }
+	@Override
+	AstNode signedTerm1( ){
+		match( PLUS );
+		return new AstUnaryOperation( LEXER.lookahead().BEGIN,
+				AstUnaryOperation.Operator.POSITIVE_SIGN, exponentiation() );
+	}
 
-    @Override
-    AstNode signedTerm2(){
-        match(MINUS);
-        return new AstUnaryOperation(LEXER.lookahead().BEGIN, AstUnaryOperation.Operator.NEGATIVE_SIGN, exponentiation());
+	@Override
+	AstNode signedTerm2( ){
+		match( MINUS );
+		return new AstUnaryOperation( LEXER.lookahead().BEGIN,
+				AstUnaryOperation.Operator.NEGATIVE_SIGN, exponentiation() );
+	}
 
-    }
-
-    @Override
-    AstNode signedTerm3( ){
-        return exponentiation( );
-    }
+	@Override
+	AstNode signedTerm3( ){
+		return exponentiation( );
+	}
 
 	/*===========================================================
 	 * exponentiation
@@ -514,31 +505,25 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	public AstNode exponentiation( ){
 		// Rule: Exponentiation: atomicExpression Exponent
 		// Select Set: LPAREN, IDENTIFIER, NUMERIC_LITERAL, EOF
-
-		if (LPAREN == LEXER.lookahead().TYPE
+		if( LPAREN == LEXER.lookahead().TYPE
 				|| IDENTIFIER == LEXER.lookahead().TYPE
 				|| NUMERIC_LITERAL == LEXER.lookahead().TYPE
-				|| EOF == LEXER.lookahead().TYPE) {
-			return exponent(atomicExpression());
+				|| EOF == LEXER.lookahead().TYPE ){
+			return exponent( atomicExpression() );
 		}
-
-		Set<Token.Type> acceptedTypes = setOf(LPAREN, IDENTIFIER, NUMERIC_LITERAL, EOF);
-		throw this.parsingException(acceptedTypes);
+		Set<Token.Type> acceptedTypes = setOf( LPAREN, IDENTIFIER, NUMERIC_LITERAL, EOF );
+		throw this.parsingException( acceptedTypes) ;
 	}
 
 	@Override
 	public AstNode exponent( AstNode previous ){
 		// This function decides which of the both rules for "exponent" should be applied
 		// This is determined by the select set
-
-
-		switch (LEXER.lookahead().TYPE) {
-
+		switch( LEXER.lookahead().TYPE ){
 			// Rule: Exponent: "**" Exponentiation
 			// Select Set: POWER
 			case POWER:
-				return exponent1(previous);
-
+				return exponent1( previous );
 			// Rule: Exponent: eps
 			// Select Set: +,-,*,/ ..
 			case PLUS:
@@ -556,18 +541,19 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 			case RPAREN:
 			case MODULO:
 			case EOF:
-				return exponent2(previous);
-
+				return exponent2( previous );
 			default:
-				Set<Token.Type> acceptedTypes = setOf(POWER, PLUS, MINUS, ASTERISK, DIVIDE, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL, EQUAL, NOT_EQUAL, LAND, LOR, RPAREN, MODULO, EOF);
-				throw this.parsingException(acceptedTypes);
+				Set<Token.Type> acceptedTypes = setOf( POWER, PLUS, MINUS, ASTERISK, DIVIDE, GREATER, LESS,
+						GREATER_EQUAL, LESS_EQUAL, EQUAL, NOT_EQUAL, LAND, LOR, RPAREN, MODULO, EOF );
+				throw this.parsingException( acceptedTypes );
 		}
 	}
 
 	@Override
 	public AstNode exponent1( AstNode previous ){
-		match(POWER);
-		return new AstBinaryOperation(LEXER.lookahead().BEGIN, previous, AstBinaryOperation.Operator.POWER, exponentiation());
+		match( POWER );
+		return new AstBinaryOperation( LEXER.lookahead().BEGIN,
+				previous, AstBinaryOperation.Operator.POWER, exponentiation() );
 	}
 
 	@Override
@@ -581,50 +567,45 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 
 	@Override
 	public AstNode atomicExpression( ){
-		switch (this.LEXER.lookahead().TYPE) {
+		switch( this.LEXER.lookahead().TYPE ){
 			case LPAREN:
-				return this.atomicExpression1();
+				return this.atomicExpression1( );
 			case IDENTIFIER:
-				return this.atomicExpression2();
+				return this.atomicExpression2( );
 			case NUMERIC_LITERAL:
 			case TRUE:
 			case FALSE:
-				return this.atomicExpression3();
+				return this.atomicExpression3( );
 			default:
-				throw parsingException(Selector.ATOMICS);
+				throw parsingException( Selector.ATOMICS );
 		}
 	}
 
 	@Override
 	public AstNode atomicExpression1( ){
-		match(LPAREN);
-		AstNode node = this.conditionalExpression();
-		match(RPAREN);
-
+		match( LPAREN );
+		AstNode node = this.conditionalExpression( );
+		match( RPAREN );
 		return node;
 	}
 
 	@Override
 	public AstNode atomicExpression2( ){
-		if (this.LEXER.lookahead().TYPE != IDENTIFIER) {
-			throw this.parsingException(IDENTIFIER);
+		if( this.LEXER.lookahead().TYPE != IDENTIFIER ){
+			throw this.parsingException( IDENTIFIER );
 		}
-
-		AstVariable variable = new AstVariable(this.LEXER.lookahead().LEXEME);
-
-		this.LEXER.advance();
-
+		AstVariable variable = new AstVariable( this.LEXER.lookahead().LEXEME );
+		this.LEXER.advance( );
 		return variable;
 	}
 
 	@Override
 	public AstNode atomicExpression3( ){
-		Set<Token.Type> acceptedTypes = setOf(NUMERIC_LITERAL, TRUE, FALSE);
-		if (!acceptedTypes.contains(this.LEXER.lookahead().TYPE)) {
-			throw this.parsingException(acceptedTypes);
+		Set<Token.Type> acceptedTypes = setOf( NUMERIC_LITERAL, TRUE, FALSE );
+		if( !acceptedTypes.contains( this.LEXER.lookahead().TYPE ) ){
+			throw this.parsingException( acceptedTypes );
 		}
-
-		AstNode literal = this.literal();
+		AstNode literal = this.literal( );
 		return literal;
 	}
 
@@ -633,31 +614,31 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 	 *===========================================================*/
 
 	@Override
-	public AstNode literal() {
-		if (Selector.LITERAL1.contains(LEXER.lookahead().TYPE)) {
-			return literal1();
+	public AstNode literal( ){
+		if( Selector.LITERAL1.contains(LEXER.lookahead().TYPE) ){
+			return literal1( );
 		}
-		if (NUMERIC_LITERAL == LEXER.lookahead().TYPE) {
-			return literal2();
+		if( NUMERIC_LITERAL == LEXER.lookahead().TYPE ){
+			return literal2( );
 		}
-		throw parsingException(Selector.LITERAL);
+		throw parsingException( Selector.LITERAL );
 	}
 
 	@Override
-	AstNode literal1() {
-		Token token = LEXER.lookahead();
-		if (TRUE == token.TYPE) {
-			return new AstLiteral(new Bool(true));
+	AstNode literal1( ){
+		Token token = LEXER.lookahead( );
+		if( TRUE == token.TYPE ){
+			return new AstLiteral( new Bool(true) );
 		}
-		if (FALSE == token.TYPE) {
-			return new AstLiteral(new Bool(false));
+		if( FALSE == token.TYPE ){
+			return new AstLiteral( new Bool(false) );
 		}
-		throw parsingException(Selector.LITERAL1);
+		throw parsingException( Selector.LITERAL1 );
 	}
 
 	@Override
-	AstNode literal2() {
-		Token token = LEXER.lookahead();
+	AstNode literal2( ){
+		Token token = LEXER.lookahead( );
 		match( Token.Type.NUMERIC_LITERAL );
 		NumericValue value = NumericalEvaluator.parse( token.LEXEME );
 		return new AstLiteral( value );
@@ -671,22 +652,22 @@ public class CraftedSlangParser extends AbstractParserLL1 {
 		if( LEXER.lookahead().TYPE != expectedType ){
 			throw parsingException( expectedType );
 		}
-		LEXER.advance();
+		LEXER.advance( );
 	}
 
 	private RuntimeException parsingException( Set<Token.Type> selectionSet ){
 		CodeLocation begin = LEXER.lookahead().BEGIN;
 		CodeLocation end = LEXER.lookahead().END;
-		String message = String.format(PARSER_ERROR_MESSAGE, LEXER.lookahead().LEXEME, begin, end, selectionSet);
-		return new RuntimeException(message);
+		String message = String.format( PARSER_ERROR_MESSAGE, LEXER.lookahead().LEXEME, begin, end, selectionSet );
+		return new RuntimeException( message );
 	}
 
 	private RuntimeException parsingException( Token.Type selectionSet ){
 		CodeLocation begin = LEXER.lookahead().BEGIN;
 		CodeLocation end = LEXER.lookahead().END;
-		String message = String.format(PARSER_ERROR_MESSAGE, LEXER.lookahead().LEXEME, begin, end,
-				"{" + selectionSet + "}");
-		return new RuntimeException(message);
+		String message = String.format( PARSER_ERROR_MESSAGE, LEXER.lookahead().LEXEME, begin, end,
+				"{" + selectionSet + "}" );
+		return new RuntimeException( message );
 	}
 
 }
