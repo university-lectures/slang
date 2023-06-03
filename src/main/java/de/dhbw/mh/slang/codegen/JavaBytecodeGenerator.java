@@ -96,10 +96,10 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 				String result = "";
 				result += lhs;
 				result += rhs;
-				result += String.format("if_icmpge #%d_gt%n", labelCounter);
+				result += String.format("if_icmpge #%d_ge%n", labelCounter);
 				result += String.format("iconst_0%n");
 				result += String.format("goto #%d_end%n", labelCounter);
-				result += String.format("#%d_gt:%n", labelCounter);
+				result += String.format("#%d_ge:%n", labelCounter);
 				result += String.format("iconst_1%n");
 				result += String.format("#%d_end:%n", labelCounter);
 				return result;
