@@ -10,6 +10,7 @@ import de.dhbw.mh.slang.Datatype;
 import de.dhbw.mh.slang.Value;
 import de.dhbw.mh.slang.ast.AstNode;
 
+
 class JavaBytecodeGenerator8Test extends JavaBytecodeGeneratorTest {
 
 	private static final int GROUP_ID = 8;
