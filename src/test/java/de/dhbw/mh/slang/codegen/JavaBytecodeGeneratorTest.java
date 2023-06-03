@@ -140,45 +140,62 @@ class JavaBytecodeGeneratorTest {
 				Arguments.of(
 						new AstBinaryOperation( null, LHS, AstBinaryOperation.Operator.COMPARE_EQUAL, RHS ),
 						"if_icmpne #0_ne",
-						"#0_ne:"
+						"iconst_1",
+						"#0_ne:",
+						"iconst_0"
 				),
 				Arguments.of(
 						new AstBinaryOperation( null, LHS, AstBinaryOperation.Operator.COMPARE_UNEQUAL, RHS ),
 						"if_icmpeq #0_eq",
-						"#0_eq:"
+						"iconst_1",
+						"#0_eq:",
+						"iconst_0"
 				),
 				Arguments.of(
 						new AstBinaryOperation( null, LHS, AstBinaryOperation.Operator.LESS_THAN, RHS ),
 						"if_icmpge #0_ge",
-						"#0_ge:"
+						"iconst_1",
+						"#0_ge:",
+						"iconst_0"
 				),
 				Arguments.of(
 						new AstBinaryOperation( null, LHS, AstBinaryOperation.Operator.GREATER_THAN, RHS ),
 						"if_icmple #0_le",
-						"#0_le:"
+						"iconst_1",
+						"#0_le:",
+						"iconst_0"
 				),
 				Arguments.of(
 						new AstBinaryOperation( null, LHS, AstBinaryOperation.Operator.LESS_OR_EQUAL, RHS ),
 						"if_icmpgt #0_gt",
-						"#0_gt:"
+						"iconst_1",
+						"#0_gt:",
+						"iconst_0"
 				),
 				Arguments.of(
 						new AstBinaryOperation( null, LHS, AstBinaryOperation.Operator.GREATER_OR_EQUAL, RHS ),
-						"if_icmplt #0_lt",
-						"#0_lt:"
+						"if_icmpge #0_ge",
+						"iconst_0",
+						"#0_ge:",
+						"iconst_1"
 				)
 		);
 	}
 	
-	void checkCodeGenerationForRelationalOperations( AstNode node, String instruction, String label ){
-		node.setDatatype( Datatype.I32 );
-		String template = "LHS%nRHS%n%s%niconst_1%ngoto #0_end%n%s%niconst_0%n#0_end:%n";
-		String bytecode = String.format( template, instruction, label );
-		
-		JavaBytecodeGenerator spy = Mockito.spy( JavaBytecodeGenerator.class );
-		Mockito.doReturn( String.format("LHS%n") ).when( spy ).visit( LHS );
-		Mockito.doReturn( String.format("RHS%n") ).when( spy ).visit( RHS );
-		assertThat( node.accept(spy) ).isEqualTo( bytecode );
+	void checkCodeGenerationForRelationalOperations(
+			AstNode node,
+			String branch,
+			String unfulfilled,
+			String label,
+			String fulfilled ){
+		node.setDatatype(Datatype.I32);
+		String template = "LHS%nRHS%n%s%n%s%ngoto #0_end%n%s%n%s%n#0_end:%n";
+		String bytecode = String.format(template, branch, unfulfilled, label, fulfilled);
+
+		JavaBytecodeGenerator spy = Mockito.spy(JavaBytecodeGenerator.class);
+		Mockito.doReturn(String.format("LHS%n")).when(spy).visit(LHS);
+		Mockito.doReturn(String.format("RHS%n")).when(spy).visit(RHS);
+		assertThat(node.accept(spy)).isEqualTo(bytecode);
 	}
 
 }

@@ -25,7 +25,7 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
 		}else if( literal.VALUE instanceof F32 ){
 			return String.format("ldc %sf%n", ((F32) literal.VALUE).VALUE);
 		}else if( literal.VALUE instanceof F64 ){
-			throw new RuntimeException( "not yet implemented" );
+			return String.format( "ldc2_w %sd%n", ((F64)literal.VALUE).VALUE );
 		}else if( literal.VALUE instanceof Bool ){
 			String appendix = (((Bool) literal.VALUE).VALUE) ? "1" : "0";
 			return String.format("iconst_%s%n", appendix);
@@ -170,8 +170,16 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
         return String.format(sb.toString());
       }
 			case GREATER_OR_EQUAL:{
-				throw new RuntimeException( "not yet implemented" );
-				
+				String result = "";
+				result += lhs;
+				result += rhs;
+				result += String.format("if_icmpge #%d_ge%n", labelCounter);
+				result += String.format("iconst_0%n");
+				result += String.format("goto #%d_end%n", labelCounter);
+				result += String.format("#%d_ge:%n", labelCounter);
+				result += String.format("iconst_1%n");
+				result += String.format("#%d_end:%n", labelCounter);
+				return result;
 			}
 			case GREATER_THAN:{
 				String string = String.format( "%s%s%s%n", lhs, rhs, "if_icmple #0_le" );
@@ -226,3 +234,4 @@ public class JavaBytecodeGenerator implements AstVisitor<String> {
     }
 
 }
+
